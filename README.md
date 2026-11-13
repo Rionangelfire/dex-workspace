@@ -8,7 +8,7 @@ A single-file, offline-first workspace for Hack The Box labs, CPTS study, and pe
 
 DEX is a decision-support tool, not a cheat sheet. You add hosts, paste scan output, and it tells you what to enumerate next. Everything revolves around the host — services, credentials, findings, evidence, loot, and notes all hang off the machine you're working on.
 
-I built it as a learning project while studying cybersecurity at CTU and working through Hack The Box. It's a personal tool, not a commercial product.
+I built it as a learning project while studying cybersecurity at CTU and starting out on Hack The Box. It's a personal tool, not a commercial product.
 
 ## Features
 
